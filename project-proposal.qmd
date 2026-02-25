@@ -20,8 +20,6 @@ execute:
   message: false
 ---
 
-# Project Proposal – Income vs Prices (Singapore, 2000–2025)
-
 ## Chosen Visualization and Story
 
 ### Visualization Example (Original)
@@ -32,11 +30,13 @@ The original visualization, **“Average Household Income Per Household vs Purch
 
 ### Intended Story / Key Message
 
+While the original visualization compares income with a general purchasing power index, it does not isolate specific cost pressures such as housing. This project refocuses the analysis on housing affordability, as housing represents the largest expenditure component for Singapore households.
+
 The extended time horizon (2000–2025) allows examination of affordability dynamics across multiple economic cycles, including the Global Financial Crisis (2008–2009) and the COVID-19 period.
 
 The refined research question guiding this project is:
 
-**Does a high local purchasing power index translate into affordability across income groups, or does it primarily reflect outcomes for higher-income households?**
+**Did real income growth for lower-income households keep pace with housing price growth between 2000 and 2025, and have affordability gaps widened across income groups over time?**
 
 Preliminary inspection suggests a general upward trend across most income deciles between 2000 and the latest available year, with a temporary decline during the COVID-19 period around 2020.
 
@@ -50,15 +50,16 @@ Preliminary inspection suggests a general upward trend across most income decile
 -   Inclusion of income deciles acknowledges income heterogeneity across households.
 
 ### Weaknesses
-
--   Dual-axis design risks perceptual distortion by implying direct comparability between variables with different scales.
--   Displaying multiple income deciles simultaneously creates visual clutter.
--   Lack of direct affordability metrics, particularly for essential costs such as housing.
--   No breakdown of cost categories, limiting insight into affordability pressures.
--   Stacked bars reduce comparability across income groups.
--   Aggregated purchasing power obscures distributional affordability outcomes.
+-  The dual-axis design actively distorts perception by visually aligning independently scaled variables, which can falsely suggest correlation and exaggerate the apparent relationship between income and PPI.
+-  Displaying ten income deciles simultaneously creates visual congestion and increases cognitive load, reducing interpretability.
+-  The chart presents nominal income values without adjusting for inflation, limiting meaningful purchasing power comparison.
+-  There is no explicit affordability metric linking income growth to specific cost pressures such as housing.
+-  The aggregated Purchasing Power Index does not reveal distributional affordability differences across income groups.
+-  The legend is overly dense, requiring excessive visual cross-referencing and weakening narrative clarity.
 
 ## Proposed Improvements and Justifications
+
+The proposed improvements directly address the perceptual distortions, lack of inflation adjustment, and absence of affordability metrics identified in the original visualization.
 
 ### Reduce the Number of Income Groups Displayed
 
@@ -70,7 +71,7 @@ The stacked bar chart will be replaced with a faceted line chart to enable clear
 
 ### Incorporate Purchasing Power (Real Income)
 
-Household income will be adjusted using CPI to reflect real income changes, improving interpretation of purchasing power.
+Household income will be deflated using CPI to derive real income series, ensuring inflation-adjusted comparability across time.
 
 ### Improve Visual Hierarchy and Narrative
 
@@ -84,27 +85,29 @@ The datasets used in this project are obtained from official Singapore governmen
 
 -   **Source**: Department of Statistics Singapore (SingStat)\
 -   **Dataset**: Average Monthly Household Income by Income Decile\
--   **URL**: https://tablebuilder.singstat.gov.sg/table/CT/17880\
+-   **URL**: <https://tablebuilder.singstat.gov.sg/table/CT/17880\>
 -   **Justification**: This dataset provides a disaggregated view of household income across income deciles, which is essential for analysing distributional differences in affordability outcomes.
 
 ### Consumer Price Index (CPI – All Items)
 
 -   **Source**: Department of Statistics Singapore (SingStat)\
--   **URL**: https://www.singstat.gov.sg/whats-new/latest-news/cpi-highlights\
+-   **URL**: <https://www.singstat.gov.sg/whats-new/latest-news/cpi-highlights\>
 -   **Justification**: CPI is used to adjust nominal household income into real terms, allowing purchasing power and affordability trends to be analysed more accurately over time.
 
 ### HDB Resale Price Index
 
 -   **Source**: data.gov.sg (Housing & Development Board)\
--   **URL**: https://data.gov.sg/collections/189/view\
+-   **URL**: <https://data.gov.sg/collections/189/view\>
 -   **Justification**: The HDB resale price index is used as a proxy for housing costs, which represent the largest expenditure component for most Singapore households.
 
 ### Optional / Contextual Datasets
 
 The following datasets were explored for contextual understanding but are not used in the final visualization:
 
-- Private Residential Property Price Index – https://data.gov.sg/collections/1676/view  
-- Rental Price Indices – https://data.gov.sg/datasets/d_c9f57187485a850908655db0e8cfe651/view  
+<!-- - Private Residential Property Price Index – https://data.gov.sg/collections/1676/view   -->
+<!-- - Rental Price Indices – https://data.gov.sg/datasets/d_c9f57187485a850908655db0e8cfe651/view   -->
+- [Private Residential Property Price Index – data.gov.sg](https://data.gov.sg/collections/1676/view)  
+- [Rental Price Indices – data.gov.sg](https://data.gov.sg/datasets/d_c9f57187485a850908655db0e8cfe651/view)
 
 ## Data Workflow: Raw to Visualization-Ready
 
@@ -118,9 +121,13 @@ Data is inspected for missing values and inconsistencies. Time variables and inc
 
 ### Data Transformation and Aggregation
 
-Nominal income values will be converted into real income terms using CPI (All Items) as a deflator:
+- All monetary values will be adjusted to real 2010 dollars using CPI deflation before index construction.
+- Missing years, if any, will be handled via linear interpolation only if gaps are ≤ 1 year; otherwise omitted with justification.
+- Nominal income values will be converted into real income terms using CPI (All Items) as a deflator:
 
-**Real Income Index = (Nominal Income / CPI) × 100**
+**Real Income = Nominal Income ÷ (CPI / CPI_2010)**
+
+**Indexed Value = (Real Income ÷ Real Income_2010) × 100**
 
 Where CPI base year differences exist, rebasing will be performed to ensure consistent index alignment across datasets.
 
@@ -134,6 +141,18 @@ Merged datasets are validated to ensure accurate alignment across time and incom
 
 The final dataset is reshaped into long format with variables: Year, Income Group, Measure Type, and Index Value, suitable for faceted line chart visualisation.
 
+The resulting dataset contains four primary analytical dimensions:
+
+(1) Year (time dimension),
+
+(2) Income Group (distributional dimension),
+
+(3) Measure Type (Real Income vs Housing Price),
+
+(4) Indexed Value (quantitative measure).
+
+This multidimensional structure enables comparative layering and faceted visualization while maintaining analytical clarity.
+
 ## Planned Data Analysis
 
 Descriptive and comparative trend analysis will be conducted to:
@@ -141,6 +160,12 @@ Descriptive and comparative trend analysis will be conducted to:
 - Compare income and housing price growth rates across income groups.
 - Identify periods where housing prices outpace income growth.
 - Support visual annotations highlighting divergence or convergence trends.
+
+An affordability gap index (Housing Price Index – Real Income Index) will be computed to quantify divergence across income groups over time.
+
+## Limitations
+
+This analysis relies on CPI (All Items) to deflate income, which may not fully capture housing-specific inflation pressures. The HDB resale price index reflects transaction prices but does not account for mortgage interest rates or financing conditions. Household income data represents gross income and does not reflect disposable income after taxes and transfers. Additionally, index rebasing improves comparability of growth rates but obscures absolute level differences across income groups.
 
 ## Planned Work Distribution
 
@@ -189,7 +214,7 @@ Why not selected:
 
 ![Concept C: Indexed Comparison](Concept C.png){height=200px fig-align="center"}
 
-Income and housing price series are converted into normalised indices, rebased to 2010 = 100 for consistent comparison.
+Indexed comparison removes nominal scale distortion and eliminates the dual-axis bias present in the original design. By converting income and housing series into normalised indices rebased to 2010 = 100, all variables share a common baseline, enabling direct growth comparison without perceptual manipulation.
 
 Why preferred:
 - Standard economic practice.
