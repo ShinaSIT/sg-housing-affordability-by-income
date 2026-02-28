@@ -14,17 +14,24 @@ format:
     number-sections: true
     theme: cosmo
 execute:
-  enabled: false
-  echo: false
+  echo: true
   warning: false
   message: false
 ---
+
+```{r}
+#| label: setup
+#| echo: false
+
+library(tidyverse)
+library(knitr)
+```
 
 ## Chosen Visualization and Story
 
 ### Visualization Example (Original)
 
-The original visualization, **“Average Household Income Per Household vs Purchasing Power Index (PPI)”**, combines stacked bar charts representing average household income across income deciles with an overlaid Purchasing Power Index (PPI) line across time. The intention of the visualization is to compare income growth with changes in purchasing power at a national level.
+The original visualization, **"Average Household Income Per Household vs Purchasing Power Index (PPI)"**, combines stacked bar charts representing average household income across income deciles with an overlaid Purchasing Power Index (PPI) line across time. The intention of the visualization is to compare income growth with changes in purchasing power at a national level.
 
 ![Original visualization: Average Household Income vs PPI](Average-Household-Income-Per-Household-Image.jpg){width=56% fig-align="center"}
 
@@ -104,8 +111,6 @@ The datasets used in this project are obtained from official Singapore governmen
 
 The following datasets were explored for contextual understanding but are not used in the final visualization:
 
-<!-- - Private Residential Property Price Index – https://data.gov.sg/collections/1676/view   -->
-<!-- - Rental Price Indices – https://data.gov.sg/datasets/d_c9f57187485a850908655db0e8cfe651/view   -->
 - [Private Residential Property Price Index – data.gov.sg](https://data.gov.sg/collections/1676/view)  
 - [Rental Price Indices – data.gov.sg](https://data.gov.sg/datasets/d_c9f57187485a850908655db0e8cfe651/view)
 
@@ -114,6 +119,116 @@ The following datasets were explored for contextual understanding but are not us
 ### Raw Data Ingestion
 
 Raw datasets are downloaded from official sources and aligned to a common annual time range (2000–2025), subject to latest available release year.
+
+The following tables show the original data as loaded from each source file.
+
+#### Original Data: Household Income by Decile (Nominal SGD)
+
+```{r}
+#| label: tbl-raw-income
+#| tbl-cap: "Raw Data – Average Monthly Household Employment Income (Including Employer CPF) by Deciles (SGD)"
+
+# Source: SingStat Table CT/17880
+# The CSV has 10 metadata/header rows to skip.
+# Row 11 (index 0 after skip) = column headers: Deciles1/, 2025, 2024, ..., 2000
+# Rows 12–23 = Total + 10 decile rows
+# Years run in descending order across columns.
+
+income_raw_wide <- read_csv(
+  "data/Singstat_AvgMonthlyHouseholdEmploymentIncome.csv",
+  skip = 10,
+  n_max = 12,
+  col_names = FALSE,
+  show_col_types = FALSE
+)
+
+# Assign column names: first col = Decile label, then years 2025 down to 2000, then trailing comma col
+years <- as.character(2025:2000)
+colnames(income_raw_wide) <- c("Decile", years, "drop")
+income_raw_wide <- income_raw_wide %>% select(-drop)
+
+# Clean decile labels and remove the Total row
+income_raw_wide <- income_raw_wide %>%
+  mutate(Decile = str_trim(Decile)) %>%
+  filter(Decile != "Total")
+
+# Pivot to long format
+income_raw <- income_raw_wide %>%
+  pivot_longer(cols = -Decile, names_to = "Year", values_to = "Income") %>%
+  mutate(
+    Year = as.integer(Year),
+    Income = as.numeric(Income)
+  ) %>%
+  filter(Year >= 2000, Year <= 2025)
+
+# Display in wide format (years as columns) for readability
+income_display <- income_raw %>%
+  pivot_wider(names_from = Decile, values_from = Income) %>%
+  arrange(Year)
+
+kable(income_display)
+```
+
+#### Original Data: Consumer Price Index (CPI – All Items)
+
+```{r}
+#| label: tbl-raw-cpi
+#| tbl-cap: "Raw Data – Consumer Price Index, All Items (2024 = 100), Annual Average"
+
+# Source: SingStat - CPI (2024 as Base Year), Monthly
+# Format: Row 1 = headers (DataSeries, 2026Jan, 2025Dec, ..., 1961Jan)
+#         Row 2 = "All Items" row with monthly index values
+# We extract the "All Items" row and compute annual averages.
+
+cpi_monthly_raw <- read_csv(
+  "data/ConsumerPriceIndexCPI2024AsBaseYearMonthly.csv",
+  col_types = cols(.default = col_character())
+)
+
+# Extract the "All Items" row and pivot to long format
+cpi_all_items <- cpi_monthly_raw %>%
+  filter(DataSeries == "All Items") %>%
+  pivot_longer(cols = -DataSeries, names_to = "Month_Year", values_to = "CPI") %>%
+  mutate(
+    CPI = as.numeric(CPI),
+    Year = as.integer(str_extract(Month_Year, "\\d{4}"))
+  ) %>%
+  filter(Year >= 2000, Year <= 2025, !is.na(CPI))
+
+# Compute annual average CPI
+cpi_annual <- cpi_all_items %>%
+  group_by(Year) %>%
+  summarise(CPI_2024base = round(mean(CPI), 2), .groups = "drop") %>%
+  arrange(Year)
+
+kable(cpi_annual, col.names = c("Year", "CPI (2024 = 100)"))
+```
+
+#### Original Data: HDB Resale Price Index
+
+```{r}
+#| label: tbl-raw-hdb
+#| tbl-cap: "Raw Data – HDB Resale Price Index (1Q2009 = 100), Annual Average"
+
+# Source: data.gov.sg / HDB
+# Format: quarter (e.g. "2000-Q1"), index (numeric)
+# We compute annual averages from quarterly data.
+
+hdb_rpi_quarterly <- read_csv(
+  "data/HDBResalePriceIndex1Q2009100Quarterly.csv",
+  show_col_types = FALSE
+)
+
+# Compute annual average from quarterly values
+hdb_rpi_annual <- hdb_rpi_quarterly %>%
+  mutate(Year = as.integer(str_extract(quarter, "\\d{4}"))) %>%
+  filter(Year >= 2000, Year <= 2025) %>%
+  group_by(Year) %>%
+  summarise(HDB_RPI = round(mean(index), 1), .groups = "drop") %>%
+  arrange(Year)
+
+kable(hdb_rpi_annual, col.names = c("Year", "HDB Resale Price Index (1Q2009 = 100)"))
+```
 
 ### Data Cleaning and Standardisation
 
@@ -133,6 +248,116 @@ Where CPI base year differences exist, rebasing will be performed to ensure cons
 
 Income and housing price series are converted into normalised indices, rebased to 2010 = 100 for consistent long-term comparison.
 
+#### Step 1: Aggregate Deciles into Income Groups
+
+The ten income deciles are aggregated into three broader categories to reduce visual complexity:
+
+- **Bottom 20%**: Average of 1st and 2nd deciles
+- **Middle 60%**: Average of 3rd through 8th deciles
+- **Top 20%**: Average of 9th and 10th deciles
+
+```{r}
+#| label: tbl-grouped-income
+#| tbl-cap: "Aggregated Nominal Household Income by Income Group (SGD)"
+
+income_wide_by_decile <- income_raw %>%
+  pivot_wider(names_from = Decile, values_from = Income)
+
+income_grouped <- income_wide_by_decile %>%
+  mutate(
+    `Bottom 20%` = (`1st (Lowest)` + `2nd`) / 2,
+    `Middle 60%` = (`3rd` + `4th` + `5th` + `6th` + `7th` + `8th`) / 6,
+    `Top 20%`    = (`9th` + `10th (Highest)`) / 2
+  ) %>%
+  select(Year, `Bottom 20%`, `Middle 60%`, `Top 20%`) %>%
+  arrange(Year)
+
+kable(income_grouped, digits = 0)
+```
+
+#### Step 2: Rebase CPI to 2010 = 100
+
+The CPI series (originally based at 2024 = 100) is rebased to 2010 = 100 so that all indices share a common reference year.
+
+```{r}
+#| label: tbl-cpi-rebased
+#| tbl-cap: "CPI Rebased to 2010 = 100"
+
+cpi_2010_val <- cpi_annual %>% filter(Year == 2010) %>% pull(CPI_2024base)
+
+cpi <- cpi_annual %>%
+  mutate(`CPI (2010 = 100)` = round(CPI_2024base / cpi_2010_val * 100, 1)) %>%
+  select(Year, `CPI (2024 = 100)` = CPI_2024base, `CPI (2010 = 100)`)
+
+kable(cpi)
+```
+
+#### Step 3: Deflate Nominal Income to Real Income (2010 SGD)
+
+Nominal income is divided by the rebased CPI (expressed as a proportion) to obtain real income in constant 2010 dollars.
+
+```{r}
+#| label: tbl-real-income
+#| tbl-cap: "Real Household Income by Income Group (Constant 2010 SGD)"
+
+income_real <- income_grouped %>%
+  left_join(
+    cpi %>% select(Year, `CPI (2010 = 100)`),
+    by = "Year"
+  ) %>%
+  mutate(
+    `Bottom 20% (Real)` = round(`Bottom 20%` / (`CPI (2010 = 100)` / 100), 0),
+    `Middle 60% (Real)` = round(`Middle 60%` / (`CPI (2010 = 100)` / 100), 0),
+    `Top 20% (Real)`    = round(`Top 20%`    / (`CPI (2010 = 100)` / 100), 0)
+  )
+
+kable(
+  income_real %>%
+    select(Year,
+           `Bottom 20% (Nominal)` = `Bottom 20%`,
+           `Bottom 20% (Real)`,
+           `Middle 60% (Nominal)` = `Middle 60%`,
+           `Middle 60% (Real)`,
+           `Top 20% (Nominal)` = `Top 20%`,
+           `Top 20% (Real)`),
+  digits = 0
+)
+```
+
+#### Step 4: Index All Series to 2010 = 100
+
+Both real income and the HDB Resale Price Index are converted into normalised indices with 2010 as the base year (= 100), enabling direct comparison of growth rates.
+
+```{r}
+#| label: tbl-indexed
+#| tbl-cap: "Indexed Values (2010 = 100) – Real Income and HDB Resale Price Index"
+
+base_2010 <- income_real %>% filter(Year == 2010)
+
+income_indexed <- income_real %>%
+  mutate(
+    `Bottom 20% Index` = round(`Bottom 20% (Real)` / base_2010$`Bottom 20% (Real)` * 100, 1),
+    `Middle 60% Index` = round(`Middle 60% (Real)` / base_2010$`Middle 60% (Real)` * 100, 1),
+    `Top 20% Index`    = round(`Top 20% (Real)`    / base_2010$`Top 20% (Real)`    * 100, 1)
+  )
+
+# Rebase HDB RPI to 2010 = 100
+hdb_2010_val <- hdb_rpi_annual %>% filter(Year == 2010) %>% pull(HDB_RPI)
+
+hdb_indexed <- hdb_rpi_annual %>%
+  mutate(`HDB Index (2010 = 100)` = round(HDB_RPI / hdb_2010_val * 100, 1))
+
+# Combine into one summary table
+indexed_summary <- income_indexed %>%
+  select(Year, `Bottom 20% Index`, `Middle 60% Index`, `Top 20% Index`) %>%
+  left_join(
+    hdb_indexed %>% select(Year, `HDB Index (2010 = 100)`),
+    by = "Year"
+  )
+
+kable(indexed_summary)
+```
+
 ### Validation and Quality Checks
 
 Merged datasets are validated to ensure accurate alignment across time and income groups, with checks for duplication or data loss.
@@ -140,6 +365,117 @@ Merged datasets are validated to ensure accurate alignment across time and incom
 ### Final Tidy Dataset
 
 The final dataset is reshaped into long format with variables: Year, Income Group, Measure Type, and Index Value, suitable for faceted line chart visualisation.
+
+```{r}
+#| label: tbl-tidy
+#| tbl-cap: "Final Tidy Dataset (Sample Rows)"
+
+tidy_data <- income_indexed %>%
+  select(Year, `Bottom 20% Index`, `Middle 60% Index`, `Top 20% Index`) %>%
+  pivot_longer(
+    cols = c(`Bottom 20% Index`, `Middle 60% Index`, `Top 20% Index`),
+    names_to = "Income_Group",
+    values_to = "Index_Value"
+  ) %>%
+  mutate(
+    Income_Group = str_remove(Income_Group, " Index"),
+    Measure_Type = "Real Income"
+  )
+
+hdb_long <- hdb_indexed %>%
+  select(Year, Index_Value = `HDB Index (2010 = 100)`) %>%
+  crossing(Income_Group = c("Bottom 20%", "Middle 60%", "Top 20%")) %>%
+  mutate(Measure_Type = "HDB Resale Price")
+
+tidy_data <- bind_rows(tidy_data, hdb_long) %>%
+  select(Year, Income_Group, Measure_Type, Index_Value) %>%
+  arrange(Year, Income_Group, Measure_Type)
+
+kable(
+  tidy_data %>% filter(Year %in% c(2000, 2005, 2010, 2015, 2020, 2025)),
+  col.names = c("Year", "Income Group", "Measure Type", "Index Value (2010 = 100)")
+)
+```
+
+### Preliminary Visualisation
+
+Using the final tidy dataset, two exploratory visualisations are produced to preview the intended analytical output.
+
+#### Indexed Comparison (Faceted Line Chart)
+
+```{r}
+#| label: fig-indexed-comparison
+#| fig-cap: "Real Household Income vs HDB Resale Price Index (2010 = 100)"
+#| fig-width: 12
+#| fig-height: 5
+
+tidy_data <- tidy_data %>%
+  mutate(
+    Income_Group = factor(Income_Group, levels = c("Bottom 20%", "Middle 60%", "Top 20%")),
+    Measure_Type = factor(Measure_Type, levels = c("Real Income", "HDB Resale Price"))
+  )
+
+ggplot(tidy_data, aes(x = Year, y = Index_Value, color = Measure_Type)) +
+  geom_line(linewidth = 1) +
+  geom_hline(yintercept = 100, linetype = "dashed", color = "grey50", linewidth = 0.4) +
+  facet_wrap(~Income_Group, ncol = 3) +
+  scale_color_manual(values = c("Real Income" = "#2166AC", "HDB Resale Price" = "#B2182B")) +
+  scale_x_continuous(breaks = seq(2000, 2025, by = 5)) +
+  labs(
+    title = "Real Household Income vs HDB Resale Price Index (2010 = 100)",
+    subtitle = "Singapore, 2000–2025 | Income deflated by CPI (All Items)",
+    x = "Year", y = "Index Value (2010 = 100)",
+    color = "Measure",
+    caption = "Sources: SingStat (Household Income, CPI), HDB (Resale Price Index)"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    legend.position = "bottom",
+    strip.text = element_text(face = "bold", size = 11),
+    plot.title = element_text(face = "bold", size = 13),
+    plot.subtitle = element_text(size = 10, color = "grey40"),
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8)
+  )
+```
+
+#### Affordability Gap by Income Group
+
+```{r}
+#| label: fig-affordability-gap
+#| fig-cap: "Housing Affordability Gap by Income Group"
+#| fig-width: 10
+#| fig-height: 6
+
+gap_data <- tidy_data %>%
+  pivot_wider(names_from = Measure_Type, values_from = Index_Value) %>%
+  mutate(Affordability_Gap = `HDB Resale Price` - `Real Income`)
+
+ggplot(gap_data, aes(x = Year, y = Affordability_Gap, color = Income_Group)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 1.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
+  scale_color_manual(values = c("Bottom 20%" = "#D73027", "Middle 60%" = "#FC8D59", "Top 20%" = "#4575B4")) +
+  scale_x_continuous(breaks = seq(2000, 2025, by = 5)) +
+  annotate("rect", xmin = 2008, xmax = 2009, ymin = -Inf, ymax = Inf, alpha = 0.1, fill = "grey") +
+  annotate("text", x = 2008.5, y = 75, label = "GFC", size = 2.5, color = "grey40") +
+  annotate("rect", xmin = 2020, xmax = 2021, ymin = -Inf, ymax = Inf, alpha = 0.1, fill = "grey") +
+  annotate("text", x = 2020.5, y = 75, label = "COVID-19", size = 2.5, color = "grey40") +
+  labs(
+    title = "Housing Affordability Gap by Income Group",
+    subtitle = "Gap = HDB Resale Price Index – Real Income Index (2010 = 100)\nPositive values indicate housing prices outpacing income growth",
+    x = "Year", y = "Affordability Gap (Index Points)",
+    color = "Income Group",
+    caption = "Sources: SingStat (Household Income, CPI), HDB (Resale Price Index)"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold", size = 13),
+    plot.subtitle = element_text(size = 10, color = "grey40"),
+    panel.grid.minor = element_blank()
+  )
+```
 
 The resulting dataset contains four primary analytical dimensions:
 
