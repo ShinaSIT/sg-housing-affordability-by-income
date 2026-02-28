@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.26">
+<meta name="generator" content="quarto-1.7.32">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -67,15 +67,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="project-proposal_files/libs/clipboard/clipboard.min.js"></script>
 <script src="project-proposal_files/libs/quarto-html/quarto.js" type="module"></script>
 <script src="project-proposal_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="project-proposal_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="project-proposal_files/libs/quarto-html/popper.min.js"></script>
 <script src="project-proposal_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="project-proposal_files/libs/quarto-html/anchor.min.js"></script>
 <link href="project-proposal_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="project-proposal_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="project-proposal_files/libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="project-proposal_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="project-proposal_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="project-proposal_files/libs/bootstrap/bootstrap-4d7f0bce1131f3e5f9547cd857cfbfc8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="project-proposal_files/libs/bootstrap/bootstrap-813c323200a87c37e262811031999de4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -117,7 +116,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#raw-data-ingestion" id="toc-raw-data-ingestion" class="nav-link" data-scroll-target="#raw-data-ingestion"><span class="header-section-number">5.1</span> Raw Data Ingestion</a></li>
   <li><a href="#data-cleaning-and-standardisation" id="toc-data-cleaning-and-standardisation" class="nav-link" data-scroll-target="#data-cleaning-and-standardisation"><span class="header-section-number">5.2</span> Data Cleaning and Standardisation</a></li>
   <li><a href="#data-transformation-and-aggregation" id="toc-data-transformation-and-aggregation" class="nav-link" data-scroll-target="#data-transformation-and-aggregation"><span class="header-section-number">5.3</span> Data Transformation and Aggregation</a></li>
-  <li><a href="#validation-and-quality-checks" id="toc-validation-and-quality-checks" class="nav-link" data-scroll-target="#validation-and-quality-checks"><span class="header-section-number">5.4</span> Validation and Quality Checks</a></li>
+  <li><a href="#data-validation-and-quality-checks" id="toc-data-validation-and-quality-checks" class="nav-link" data-scroll-target="#data-validation-and-quality-checks"><span class="header-section-number">5.4</span> Data Validation and Quality Checks</a></li>
   <li><a href="#final-tidy-dataset" id="toc-final-tidy-dataset" class="nav-link" data-scroll-target="#final-tidy-dataset"><span class="header-section-number">5.5</span> Final Tidy Dataset</a></li>
   <li><a href="#preliminary-visualisation" id="toc-preliminary-visualisation" class="nav-link" data-scroll-target="#preliminary-visualisation"><span class="header-section-number">5.6</span> Preliminary Visualisation</a></li>
   </ul></li>
@@ -285,7 +284,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="original-data-household-income-by-decile-nominal-sgd" class="level4" data-number="5.1.1">
 <h4 data-number="5.1.1" class="anchored" data-anchor-id="original-data-household-income-by-decile-nominal-sgd"><span class="header-section-number">5.1.1</span> Original Data: Household Income by Decile (Nominal SGD)</h4>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: SingStat Table CT/17880</span></span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: SingStat Table CT/17880</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The CSV has 10 metadata/header rows to skip.</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Row 11 (index 0 after skip) = column headers: Deciles1/, 2025, 2024, ..., 2000</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Rows 12–23 = Total + 10 decile rows</span></span>
@@ -299,37 +298,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign column names: first col = Decile label, then years 2025 down to 2000, then trailing comma col</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="dv">2025</span><span class="sc">:</span><span class="dv">2000</span>)</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(income_raw_wide) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Decile"</span>, years, <span class="st">"drop"</span>)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>income_raw_wide <span class="ot">&lt;-</span> income_raw_wide <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>drop)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean decile labels and remove the Total row</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>income_raw_wide <span class="ot">&lt;-</span> income_raw_wide <span class="sc">%&gt;%</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Decile =</span> <span class="fu">str_trim</span>(Decile)) <span class="sc">%&gt;%</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Decile <span class="sc">!=</span> <span class="st">"Total"</span>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Pivot to long format</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>income_raw <span class="ot">&lt;-</span> income_raw_wide <span class="sc">%&gt;%</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>Decile, <span class="at">names_to =</span> <span class="st">"Year"</span>, <span class="at">values_to =</span> <span class="st">"Income"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">Year =</span> <span class="fu">as.integer</span>(Year),</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">Income =</span> <span class="fu">as.numeric</span>(Income)</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">&gt;=</span> <span class="dv">2000</span>, Year <span class="sc">&lt;=</span> <span class="dv">2025</span>)</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Display in wide format (years as columns) for readability</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>income_display <span class="ot">&lt;-</span> income_raw <span class="sc">%&gt;%</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> Decile, <span class="at">values_from =</span> Income) <span class="sc">%&gt;%</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year)</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(income_display)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggtexttable</span>(<span class="fu">head</span>(income_raw_wide, <span class="dv">6</span>))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign column names: first col = Decile label, then years 2025 down to 2000, then trailing comma col</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="dv">2025</span><span class="sc">:</span><span class="dv">2000</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(income_raw_wide) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Decile"</span>, years, <span class="st">"drop"</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>income_raw_wide <span class="ot">&lt;-</span> income_raw_wide <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>drop)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean decile labels and remove the Total row</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>income_raw_wide <span class="ot">&lt;-</span> income_raw_wide <span class="sc">%&gt;%</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Decile =</span> <span class="fu">str_trim</span>(Decile)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Decile <span class="sc">!=</span> <span class="st">"Total"</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Pivot to long format</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>income_raw <span class="ot">&lt;-</span> income_raw_wide <span class="sc">%&gt;%</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>Decile, <span class="at">names_to =</span> <span class="st">"Year"</span>, <span class="at">values_to =</span> <span class="st">"Income"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">Year =</span> <span class="fu">as.integer</span>(Year),</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">Income =</span> <span class="fu">as.numeric</span>(Income)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">&gt;=</span> <span class="dv">2000</span>, Year <span class="sc">&lt;=</span> <span class="dv">2025</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Display in wide format (years as columns) for readability</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>income_display <span class="ot">&lt;-</span> income_raw <span class="sc">%&gt;%</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> Decile, <span class="at">values_from =</span> Income) <span class="sc">%&gt;%</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year)</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(income_display)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-raw-income" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-raw-income-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Including Employer CPF) by Deciles (SGD)
 </figcaption>
 <div aria-describedby="tbl-raw-income-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="project-proposal_files/figure-html/tbl-raw-income-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
 <div class="cell-output-display">
 <table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <colgroup>
@@ -738,7 +745,7 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <section id="original-data-consumer-price-index-cpi-all-items" class="level4" data-number="5.1.2">
 <h4 data-number="5.1.2" class="anchored" data-anchor-id="original-data-consumer-price-index-cpi-all-items"><span class="header-section-number">5.1.2</span> Original Data: Consumer Price Index (CPI – All Items)</h4>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: SingStat - CPI (2024 as Base Year), Monthly</span></span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: SingStat - CPI (2024 as Base Year), Monthly</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Format: Row 1 = headers (DataSeries, 2026Jan, 2025Dec, ..., 1961Jan)</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#         Row 2 = "All Items" row with monthly index values</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># We extract the "All Items" row and compute annual averages.</span></span>
@@ -748,29 +755,37 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_types =</span> <span class="fu">cols</span>(<span class="at">.default =</span> <span class="fu">col_character</span>())</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the "All Items" row and pivot to long format</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>cpi_all_items <span class="ot">&lt;-</span> cpi_monthly_raw <span class="sc">%&gt;%</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(DataSeries <span class="sc">==</span> <span class="st">"All Items"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>DataSeries, <span class="at">names_to =</span> <span class="st">"Month_Year"</span>, <span class="at">values_to =</span> <span class="st">"CPI"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">CPI =</span> <span class="fu">as.numeric</span>(CPI),</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">Year =</span> <span class="fu">as.integer</span>(<span class="fu">str_extract</span>(Month_Year, <span class="st">"</span><span class="sc">\\</span><span class="st">d{4}"</span>))</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">&gt;=</span> <span class="dv">2000</span>, Year <span class="sc">&lt;=</span> <span class="dv">2025</span>, <span class="sc">!</span><span class="fu">is.na</span>(CPI))</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute annual average CPI</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>cpi_annual <span class="ot">&lt;-</span> cpi_all_items <span class="sc">%&gt;%</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year) <span class="sc">%&gt;%</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">CPI_2024base =</span> <span class="fu">round</span>(<span class="fu">mean</span>(CPI), <span class="dv">2</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year)</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(cpi_annual, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"CPI (2024 = 100)"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggtexttable</span>(<span class="fu">head</span>(cpi_monthly_raw, <span class="dv">6</span>))</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the "All Items" row and pivot to long format</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>cpi_all_items <span class="ot">&lt;-</span> cpi_monthly_raw <span class="sc">%&gt;%</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(DataSeries <span class="sc">==</span> <span class="st">"All Items"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>DataSeries, <span class="at">names_to =</span> <span class="st">"Month_Year"</span>, <span class="at">values_to =</span> <span class="st">"CPI"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">CPI =</span> <span class="fu">as.numeric</span>(CPI),</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">Year =</span> <span class="fu">as.integer</span>(<span class="fu">str_extract</span>(Month_Year, <span class="st">"</span><span class="sc">\\</span><span class="st">d{4}"</span>))</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">&gt;=</span> <span class="dv">2000</span>, Year <span class="sc">&lt;=</span> <span class="dv">2025</span>, <span class="sc">!</span><span class="fu">is.na</span>(CPI))</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute annual average CPI</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>cpi_annual <span class="ot">&lt;-</span> cpi_all_items <span class="sc">%&gt;%</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year) <span class="sc">%&gt;%</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">CPI_2024base =</span> <span class="fu">round</span>(<span class="fu">mean</span>(CPI), <span class="dv">2</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(cpi_annual, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"CPI (2024 = 100)"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-raw-cpi" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-raw-cpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Table&nbsp;2: Raw Data – Consumer Price Index, All Items (2024 = 100), Annual Average
 </figcaption>
 <div aria-describedby="tbl-raw-cpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="project-proposal_files/figure-html/tbl-raw-cpi-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
 <div class="cell-output-display">
 <table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <thead>
@@ -895,7 +910,7 @@ Table&nbsp;2: Raw Data – Consumer Price Index, All Items (2024 = 100), Annual 
 <section id="original-data-hdb-resale-price-index" class="level4" data-number="5.1.3">
 <h4 data-number="5.1.3" class="anchored" data-anchor-id="original-data-hdb-resale-price-index"><span class="header-section-number">5.1.3</span> Original Data: HDB Resale Price Index</h4>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: data.gov.sg / HDB</span></span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: data.gov.sg / HDB</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Format: quarter (e.g. "2000-Q1"), index (numeric)</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># We compute annual averages from quarterly data.</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -904,21 +919,29 @@ Table&nbsp;2: Raw Data – Consumer Price Index, All Items (2024 = 100), Annual 
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute annual average from quarterly values</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>hdb_rpi_annual <span class="ot">&lt;-</span> hdb_rpi_quarterly <span class="sc">%&gt;%</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Year =</span> <span class="fu">as.integer</span>(<span class="fu">str_extract</span>(quarter, <span class="st">"</span><span class="sc">\\</span><span class="st">d{4}"</span>))) <span class="sc">%&gt;%</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">&gt;=</span> <span class="dv">2000</span>, Year <span class="sc">&lt;=</span> <span class="dv">2025</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year) <span class="sc">%&gt;%</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">HDB_RPI =</span> <span class="fu">round</span>(<span class="fu">mean</span>(index), <span class="dv">1</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year)</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(hdb_rpi_annual, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"HDB Resale Price Index (1Q2009 = 100)"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggtexttable</span>(<span class="fu">head</span>(hdb_rpi_quarterly, <span class="dv">6</span>))</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute annual average from quarterly values</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>hdb_rpi_annual <span class="ot">&lt;-</span> hdb_rpi_quarterly <span class="sc">%&gt;%</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Year =</span> <span class="fu">as.integer</span>(<span class="fu">str_extract</span>(quarter, <span class="st">"</span><span class="sc">\\</span><span class="st">d{4}"</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">&gt;=</span> <span class="dv">2000</span>, Year <span class="sc">&lt;=</span> <span class="dv">2025</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year) <span class="sc">%&gt;%</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">HDB_RPI =</span> <span class="fu">round</span>(<span class="fu">mean</span>(index), <span class="dv">1</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(hdb_rpi_annual, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"HDB Resale Price Index (1Q2009 = 100)"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-raw-hdb" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-raw-hdb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Table&nbsp;3: Raw Data – HDB Resale Price Index (1Q2009 = 100), Annual Average
 </figcaption>
 <div aria-describedby="tbl-raw-hdb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="project-proposal_files/figure-html/tbl-raw-hdb-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
 <div class="cell-output-display">
 <table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <thead>
@@ -1052,7 +1075,7 @@ Table&nbsp;3: Raw Data – HDB Resale Price Index (1Q2009 = 100), Annual Average
 <li>Missing years, if any, will be handled via linear interpolation only if gaps are ≤ 1 year; otherwise omitted with justification.</li>
 <li>Nominal income values will be converted into real income terms using CPI (All Items) as a deflator:</li>
 </ul>
-<p><strong>Real Income = Nominal Income ÷ (CPI / CPI_2010)</strong></p>
+<p><strong>Real Income = Nominal Income ÷ (CPI / 100)</strong> <em>(where CPI has been rebased to 2010 = 100)</em></p>
 <p><strong>Indexed Value = (Real Income ÷ Real Income_2010) × 100</strong></p>
 <p>Where CPI base year differences exist, rebasing will be performed to ensure consistent index alignment across datasets.</p>
 <p>Income and housing price series are converted into normalised indices, rebased to 2010 = 100 for consistent long-term comparison.</p>
@@ -1065,7 +1088,7 @@ Table&nbsp;3: Raw Data – HDB Resale Price Index (1Q2009 = 100), Annual Average
 <li><strong>Top 20%</strong>: Average of 9th and 10th deciles</li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>income_wide_by_decile <span class="ot">&lt;-</span> income_raw <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>income_wide_by_decile <span class="ot">&lt;-</span> income_raw <span class="sc">%&gt;%</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> Decile, <span class="at">values_from =</span> Income)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>income_grouped <span class="ot">&lt;-</span> income_wide_by_decile <span class="sc">%&gt;%</span></span>
@@ -1077,7 +1100,7 @@ Table&nbsp;3: Raw Data – HDB Resale Price Index (1Q2009 = 100), Annual Average
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Year, <span class="st">`</span><span class="at">Bottom 20%</span><span class="st">`</span>, <span class="st">`</span><span class="at">Middle 60%</span><span class="st">`</span>, <span class="st">`</span><span class="at">Top 20%</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year)</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(income_grouped, <span class="at">digits =</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(income_grouped, <span class="at">digits =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-grouped-income" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-grouped-income-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1263,13 +1286,13 @@ Table&nbsp;4: Aggregated Nominal Household Income by Income Group (SGD)
 <h4 data-number="5.3.2" class="anchored" data-anchor-id="step-2-rebase-cpi-to-2010-100"><span class="header-section-number">5.3.2</span> Step 2: Rebase CPI to 2010 = 100</h4>
 <p>The CPI series (originally based at 2024 = 100) is rebased to 2010 = 100 so that all indices share a common reference year.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cpi_2010_val <span class="ot">&lt;-</span> cpi_annual <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(CPI_2024base)</span>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cpi_2010_val <span class="ot">&lt;-</span> cpi_annual <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(CPI_2024base)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>cpi <span class="ot">&lt;-</span> cpi_annual <span class="sc">%&gt;%</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">CPI (2010 = 100)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(CPI_2024base <span class="sc">/</span> cpi_2010_val <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)) <span class="sc">%&gt;%</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Year, <span class="st">`</span><span class="at">CPI (2024 = 100)</span><span class="st">`</span> <span class="ot">=</span> CPI_2024base, <span class="st">`</span><span class="at">CPI (2010 = 100)</span><span class="st">`</span>)</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(cpi)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(cpi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-cpi-rebased" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cpi-rebased-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1428,7 +1451,7 @@ Table&nbsp;5: CPI Rebased to 2010 = 100
 <h4 data-number="5.3.3" class="anchored" data-anchor-id="step-3-deflate-nominal-income-to-real-income-2010-sgd"><span class="header-section-number">5.3.3</span> Step 3: Deflate Nominal Income to Real Income (2010 SGD)</h4>
 <p>Nominal income is divided by the rebased CPI (expressed as a proportion) to obtain real income in constant 2010 dollars.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>income_real <span class="ot">&lt;-</span> income_grouped <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>income_real <span class="ot">&lt;-</span> income_grouped <span class="sc">%&gt;%</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    cpi <span class="sc">%&gt;%</span> <span class="fu">select</span>(Year, <span class="st">`</span><span class="at">CPI (2010 = 100)</span><span class="st">`</span>),</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"Year"</span></span>
@@ -1439,17 +1462,16 @@ Table&nbsp;5: CPI Rebased to 2010 = 100
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Top 20% (Real)</span><span class="st">`</span>    <span class="ot">=</span> <span class="fu">round</span>(<span class="st">`</span><span class="at">Top 20%</span><span class="st">`</span>    <span class="sc">/</span> (<span class="st">`</span><span class="at">CPI (2010 = 100)</span><span class="st">`</span> <span class="sc">/</span> <span class="dv">100</span>), <span class="dv">0</span>)</span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  income_real <span class="sc">%&gt;%</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(Year,</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>           <span class="st">`</span><span class="at">Bottom 20% (Nominal)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Bottom 20%</span><span class="st">`</span>,</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>           <span class="st">`</span><span class="at">Bottom 20% (Real)</span><span class="st">`</span>,</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>           <span class="st">`</span><span class="at">Middle 60% (Nominal)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Middle 60%</span><span class="st">`</span>,</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>           <span class="st">`</span><span class="at">Middle 60% (Real)</span><span class="st">`</span>,</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>           <span class="st">`</span><span class="at">Top 20% (Nominal)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Top 20%</span><span class="st">`</span>,</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>           <span class="st">`</span><span class="at">Top 20% (Real)</span><span class="st">`</span>),</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">0</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>real_income_display <span class="ot">&lt;-</span> income_real <span class="sc">%&gt;%</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Year,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Bottom 20% (Nominal)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Bottom 20%</span><span class="st">`</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Bottom 20% (Real)</span><span class="st">`</span>,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Middle 60% (Nominal)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Middle 60%</span><span class="st">`</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Middle 60% (Real)</span><span class="st">`</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Top 20% (Nominal)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Top 20%</span><span class="st">`</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Top 20% (Real)</span><span class="st">`</span>)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.table</span>(<span class="fu">head</span>(real_income_display, <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-real-income" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-real-income-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1457,264 +1479,11 @@ Table&nbsp;6: Real Household Income by Income Group (Constant 2010 SGD)
 </figcaption>
 <div aria-describedby="tbl-real-income-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 4%">
-<col style="width: 18%">
-<col style="width: 15%">
-<col style="width: 18%">
-<col style="width: 15%">
-<col style="width: 15%">
-<col style="width: 12%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: right;">Year</th>
-<th style="text-align: right;">Bottom 20% (Nominal)</th>
-<th style="text-align: right;">Bottom 20% (Real)</th>
-<th style="text-align: right;">Middle 60% (Nominal)</th>
-<th style="text-align: right;">Middle 60% (Real)</th>
-<th style="text-align: right;">Top 20% (Nominal)</th>
-<th style="text-align: right;">Top 20% (Real)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">2000</td>
-<td style="text-align: right;">1812</td>
-<td style="text-align: right;">2129</td>
-<td style="text-align: right;">5076</td>
-<td style="text-align: right;">5965</td>
-<td style="text-align: right;">12706</td>
-<td style="text-align: right;">14931</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2001</td>
-<td style="text-align: right;">1804</td>
-<td style="text-align: right;">2097</td>
-<td style="text-align: right;">5394</td>
-<td style="text-align: right;">6272</td>
-<td style="text-align: right;">14116</td>
-<td style="text-align: right;">16415</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2002</td>
-<td style="text-align: right;">1722</td>
-<td style="text-align: right;">2010</td>
-<td style="text-align: right;">5264</td>
-<td style="text-align: right;">6143</td>
-<td style="text-align: right;">13656</td>
-<td style="text-align: right;">15935</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2003</td>
-<td style="text-align: right;">1694</td>
-<td style="text-align: right;">1967</td>
-<td style="text-align: right;">5332</td>
-<td style="text-align: right;">6193</td>
-<td style="text-align: right;">13716</td>
-<td style="text-align: right;">15930</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2004</td>
-<td style="text-align: right;">1715</td>
-<td style="text-align: right;">1960</td>
-<td style="text-align: right;">5266</td>
-<td style="text-align: right;">6019</td>
-<td style="text-align: right;">13934</td>
-<td style="text-align: right;">15925</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2005</td>
-<td style="text-align: right;">1756</td>
-<td style="text-align: right;">1998</td>
-<td style="text-align: right;">5612</td>
-<td style="text-align: right;">6384</td>
-<td style="text-align: right;">14402</td>
-<td style="text-align: right;">16385</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2006</td>
-<td style="text-align: right;">1783</td>
-<td style="text-align: right;">2008</td>
-<td style="text-align: right;">5706</td>
-<td style="text-align: right;">6425</td>
-<td style="text-align: right;">15090</td>
-<td style="text-align: right;">16994</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2007</td>
-<td style="text-align: right;">1870</td>
-<td style="text-align: right;">2061</td>
-<td style="text-align: right;">6180</td>
-<td style="text-align: right;">6814</td>
-<td style="text-align: right;">16779</td>
-<td style="text-align: right;">18499</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2008</td>
-<td style="text-align: right;">2049</td>
-<td style="text-align: right;">2119</td>
-<td style="text-align: right;">7019</td>
-<td style="text-align: right;">7259</td>
-<td style="text-align: right;">19001</td>
-<td style="text-align: right;">19649</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2009</td>
-<td style="text-align: right;">2028</td>
-<td style="text-align: right;">2087</td>
-<td style="text-align: right;">6932</td>
-<td style="text-align: right;">7132</td>
-<td style="text-align: right;">18184</td>
-<td style="text-align: right;">18707</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2010</td>
-<td style="text-align: right;">2220</td>
-<td style="text-align: right;">2220</td>
-<td style="text-align: right;">7414</td>
-<td style="text-align: right;">7414</td>
-<td style="text-align: right;">19204</td>
-<td style="text-align: right;">19204</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2011</td>
-<td style="text-align: right;">2358</td>
-<td style="text-align: right;">2241</td>
-<td style="text-align: right;">8023</td>
-<td style="text-align: right;">7627</td>
-<td style="text-align: right;">21706</td>
-<td style="text-align: right;">20633</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2012</td>
-<td style="text-align: right;">2474</td>
-<td style="text-align: right;">2248</td>
-<td style="text-align: right;">8642</td>
-<td style="text-align: right;">7849</td>
-<td style="text-align: right;">23382</td>
-<td style="text-align: right;">21237</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2013</td>
-<td style="text-align: right;">2541</td>
-<td style="text-align: right;">2255</td>
-<td style="text-align: right;">8999</td>
-<td style="text-align: right;">7985</td>
-<td style="text-align: right;">22856</td>
-<td style="text-align: right;">20280</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2014</td>
-<td style="text-align: right;">2710</td>
-<td style="text-align: right;">2381</td>
-<td style="text-align: right;">9485</td>
-<td style="text-align: right;">8335</td>
-<td style="text-align: right;">24602</td>
-<td style="text-align: right;">21619</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2015</td>
-<td style="text-align: right;">2874</td>
-<td style="text-align: right;">2539</td>
-<td style="text-align: right;">9944</td>
-<td style="text-align: right;">8785</td>
-<td style="text-align: right;">24914</td>
-<td style="text-align: right;">22009</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2016</td>
-<td style="text-align: right;">2910</td>
-<td style="text-align: right;">2585</td>
-<td style="text-align: right;">10176</td>
-<td style="text-align: right;">9038</td>
-<td style="text-align: right;">24616</td>
-<td style="text-align: right;">21861</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2017</td>
-<td style="text-align: right;">2936</td>
-<td style="text-align: right;">2591</td>
-<td style="text-align: right;">10524</td>
-<td style="text-align: right;">9289</td>
-<td style="text-align: right;">25744</td>
-<td style="text-align: right;">22722</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2018</td>
-<td style="text-align: right;">2982</td>
-<td style="text-align: right;">2621</td>
-<td style="text-align: right;">10727</td>
-<td style="text-align: right;">9426</td>
-<td style="text-align: right;">25640</td>
-<td style="text-align: right;">22531</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2019</td>
-<td style="text-align: right;">3082</td>
-<td style="text-align: right;">2694</td>
-<td style="text-align: right;">11024</td>
-<td style="text-align: right;">9636</td>
-<td style="text-align: right;">25900</td>
-<td style="text-align: right;">22640</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2020</td>
-<td style="text-align: right;">3135</td>
-<td style="text-align: right;">2745</td>
-<td style="text-align: right;">10866</td>
-<td style="text-align: right;">9515</td>
-<td style="text-align: right;">25560</td>
-<td style="text-align: right;">22381</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2021</td>
-<td style="text-align: right;">3200</td>
-<td style="text-align: right;">2738</td>
-<td style="text-align: right;">11181</td>
-<td style="text-align: right;">9564</td>
-<td style="text-align: right;">24762</td>
-<td style="text-align: right;">21183</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2022</td>
-<td style="text-align: right;">3472</td>
-<td style="text-align: right;">2800</td>
-<td style="text-align: right;">11820</td>
-<td style="text-align: right;">9532</td>
-<td style="text-align: right;">26830</td>
-<td style="text-align: right;">21638</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2023</td>
-<td style="text-align: right;">3630</td>
-<td style="text-align: right;">2790</td>
-<td style="text-align: right;">12762</td>
-<td style="text-align: right;">9809</td>
-<td style="text-align: right;">28014</td>
-<td style="text-align: right;">21533</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2024</td>
-<td style="text-align: right;">3733</td>
-<td style="text-align: right;">2803</td>
-<td style="text-align: right;">13239</td>
-<td style="text-align: right;">9939</td>
-<td style="text-align: right;">29398</td>
-<td style="text-align: right;">22071</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2025</td>
-<td style="text-align: right;">4066</td>
-<td style="text-align: right;">3025</td>
-<td style="text-align: right;">14071</td>
-<td style="text-align: right;">10469</td>
-<td style="text-align: right;">29747</td>
-<td style="text-align: right;">22133</td>
-</tr>
-</tbody>
-</table>
+<div>
+<figure class="figure">
+<p><img src="project-proposal_files/figure-html/tbl-real-income-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </figure>
@@ -1725,13 +1494,13 @@ Table&nbsp;6: Real Household Income by Income Group (Constant 2010 SGD)
 <h4 data-number="5.3.4" class="anchored" data-anchor-id="step-4-index-all-series-to-2010-100"><span class="header-section-number">5.3.4</span> Step 4: Index All Series to 2010 = 100</h4>
 <p>Both real income and the HDB Resale Price Index are converted into normalised indices with 2010 as the base year (= 100), enabling direct comparison of growth rates.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>base_2010 <span class="ot">&lt;-</span> income_real <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>)</span>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>base_vals <span class="ot">&lt;-</span> income_real <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>income_indexed <span class="ot">&lt;-</span> income_real <span class="sc">%&gt;%</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Bottom 20% Index</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(<span class="st">`</span><span class="at">Bottom 20% (Real)</span><span class="st">`</span> <span class="sc">/</span> base_2010<span class="sc">$</span><span class="st">`</span><span class="at">Bottom 20% (Real)</span><span class="st">`</span> <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>),</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Middle 60% Index</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(<span class="st">`</span><span class="at">Middle 60% (Real)</span><span class="st">`</span> <span class="sc">/</span> base_2010<span class="sc">$</span><span class="st">`</span><span class="at">Middle 60% (Real)</span><span class="st">`</span> <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>),</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Top 20% Index</span><span class="st">`</span>    <span class="ot">=</span> <span class="fu">round</span>(<span class="st">`</span><span class="at">Top 20% (Real)</span><span class="st">`</span>    <span class="sc">/</span> base_2010<span class="sc">$</span><span class="st">`</span><span class="at">Top 20% (Real)</span><span class="st">`</span>    <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Bottom 20% Index</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(<span class="st">`</span><span class="at">Bottom 20% (Real)</span><span class="st">`</span> <span class="sc">/</span> base_vals<span class="sc">$</span><span class="st">`</span><span class="at">Bottom 20% (Real)</span><span class="st">`</span> <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Middle 60% Index</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(<span class="st">`</span><span class="at">Middle 60% (Real)</span><span class="st">`</span> <span class="sc">/</span> base_vals<span class="sc">$</span><span class="st">`</span><span class="at">Middle 60% (Real)</span><span class="st">`</span> <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Top 20% Index</span><span class="st">`</span>    <span class="ot">=</span> <span class="fu">round</span>(<span class="st">`</span><span class="at">Top 20% (Real)</span><span class="st">`</span>    <span class="sc">/</span> base_vals<span class="sc">$</span><span class="st">`</span><span class="at">Top 20% (Real)</span><span class="st">`</span>    <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Rebase HDB RPI to 2010 = 100</span></span>
@@ -1748,7 +1517,7 @@ Table&nbsp;6: Real Household Income by Income Group (Constant 2010 SGD)
 <span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"Year"</span></span>
 <span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(indexed_summary)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(indexed_summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-indexed" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-indexed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1965,43 +1734,93 @@ Table&nbsp;7: Indexed Values (2010 = 100) – Real Income and HDB Resale Price I
 </div>
 </section>
 </section>
-<section id="validation-and-quality-checks" class="level3" data-number="5.4">
-<h3 data-number="5.4" class="anchored" data-anchor-id="validation-and-quality-checks"><span class="header-section-number">5.4</span> Validation and Quality Checks</h3>
-<p>Merged datasets are validated to ensure accurate alignment across time and income groups, with checks for duplication or data loss.</p>
+<section id="data-validation-and-quality-checks" class="level3" data-number="5.4">
+<h3 data-number="5.4" class="anchored" data-anchor-id="data-validation-and-quality-checks"><span class="header-section-number">5.4</span> Data Validation and Quality Checks</h3>
+<div id="tbl-verification" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-verification-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;8
+</figcaption>
+<div aria-describedby="tbl-verification-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Verify 2010 rebasing</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>income_indexed <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 11
+   Year `Bottom 20%` `Middle 60%` `Top 20%` `CPI (2010 = 100)`
+  &lt;int&gt;        &lt;dbl&gt;        &lt;dbl&gt;     &lt;dbl&gt;              &lt;dbl&gt;
+1  2010         2220        7414.    19204.                100
+# ℹ 6 more variables: `Bottom 20% (Real)` &lt;dbl&gt;, `Middle 60% (Real)` &lt;dbl&gt;,
+#   `Top 20% (Real)` &lt;dbl&gt;, `Bottom 20% Index` &lt;dbl&gt;, `Middle 60% Index` &lt;dbl&gt;,
+#   `Top 20% Index` &lt;dbl&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>hdb_indexed <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+   Year HDB_RPI `HDB Index (2010 = 100)`
+  &lt;int&gt;   &lt;dbl&gt;                    &lt;dbl&gt;
+1  2010    119.                      100</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Check for missing values</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(<span class="fu">is.na</span>(income_indexed))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(<span class="fu">is.na</span>(hdb_indexed))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Confirm row counts</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(income_indexed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 26</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(hdb_indexed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 26</code></pre>
+</div>
+</div>
+</figure>
+</div>
+<ul>
+<li><p>All income and housing indices equal 100 in 2010, confirming correct rebasing.</p></li>
+<li><p>No missing values were introduced during transformation or joins.</p></li>
+<li><p>Row counts confirm full year coverage from 2000–2025.</p></li>
+<li><p>Merged datasets are validated to ensure accurate alignment across time and income groups, with checks for duplication or data loss.</p></li>
+</ul>
 </section>
 <section id="final-tidy-dataset" class="level3" data-number="5.5">
 <h3 data-number="5.5" class="anchored" data-anchor-id="final-tidy-dataset"><span class="header-section-number">5.5</span> Final Tidy Dataset</h3>
 <p>The final dataset is reshaped into long format with variables: Year, Income Group, Measure Type, and Index Value, suitable for faceted line chart visualisation.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>tidy_data <span class="ot">&lt;-</span> income_indexed <span class="sc">%&gt;%</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Year, <span class="st">`</span><span class="at">Bottom 20% Index</span><span class="st">`</span>, <span class="st">`</span><span class="at">Middle 60% Index</span><span class="st">`</span>, <span class="st">`</span><span class="at">Top 20% Index</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">c</span>(<span class="st">`</span><span class="at">Bottom 20% Index</span><span class="st">`</span>, <span class="st">`</span><span class="at">Middle 60% Index</span><span class="st">`</span>, <span class="st">`</span><span class="at">Top 20% Index</span><span class="st">`</span>),</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"Income_Group"</span>,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"Index_Value"</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">Income_Group =</span> <span class="fu">str_remove</span>(Income_Group, <span class="st">" Index"</span>),</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">Measure_Type =</span> <span class="st">"Real Income"</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>hdb_long <span class="ot">&lt;-</span> hdb_indexed <span class="sc">%&gt;%</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Year, <span class="at">Index_Value =</span> <span class="st">`</span><span class="at">HDB Index (2010 = 100)</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">crossing</span>(<span class="at">Income_Group =</span> <span class="fu">c</span>(<span class="st">"Bottom 20%"</span>, <span class="st">"Middle 60%"</span>, <span class="st">"Top 20%"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Measure_Type =</span> <span class="st">"HDB Resale Price"</span>)</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>tidy_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(tidy_data, hdb_long) <span class="sc">%&gt;%</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Year, Income_Group, Measure_Type, Index_Value) <span class="sc">%&gt;%</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year, Income_Group, Measure_Type)</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  tidy_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2000</span>, <span class="dv">2005</span>, <span class="dv">2010</span>, <span class="dv">2015</span>, <span class="dv">2020</span>, <span class="dv">2025</span>)),</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"Income Group"</span>, <span class="st">"Measure Type"</span>, <span class="st">"Index Value (2010 = 100)"</span>)</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>tidy_data <span class="ot">&lt;-</span> income_indexed <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Year, <span class="st">`</span><span class="at">Bottom 20% Index</span><span class="st">`</span>, <span class="st">`</span><span class="at">Middle 60% Index</span><span class="st">`</span>, <span class="st">`</span><span class="at">Top 20% Index</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">c</span>(<span class="st">`</span><span class="at">Bottom 20% Index</span><span class="st">`</span>, <span class="st">`</span><span class="at">Middle 60% Index</span><span class="st">`</span>, <span class="st">`</span><span class="at">Top 20% Index</span><span class="st">`</span>),</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"Income_Group"</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"Index_Value"</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">Income_Group =</span> <span class="fu">str_remove</span>(Income_Group, <span class="st">" Index"</span>),</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">Measure_Type =</span> <span class="st">"Real Income"</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>hdb_long <span class="ot">&lt;-</span> hdb_indexed <span class="sc">%&gt;%</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Year, <span class="at">Index_Value =</span> <span class="st">`</span><span class="at">HDB Index (2010 = 100)</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">crossing</span>(<span class="at">Income_Group =</span> <span class="fu">c</span>(<span class="st">"Bottom 20%"</span>, <span class="st">"Middle 60%"</span>, <span class="st">"Top 20%"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Measure_Type =</span> <span class="st">"HDB Resale Price"</span>)</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>tidy_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(tidy_data, hdb_long) <span class="sc">%&gt;%</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Year, Income_Group, Measure_Type, Index_Value) <span class="sc">%&gt;%</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year, Income_Group, Measure_Type)</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>  tidy_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2000</span>, <span class="dv">2005</span>, <span class="dv">2010</span>, <span class="dv">2015</span>, <span class="dv">2020</span>, <span class="dv">2025</span>)),</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"Income Group"</span>, <span class="st">"Measure Type"</span>, <span class="st">"Index Value (2010 = 100)"</span>)</span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-tidy" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-tidy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;8: Final Tidy Dataset (Sample Rows)
+Table&nbsp;9: Final Tidy Dataset (Sample Rows)
 </figcaption>
 <div aria-describedby="tbl-tidy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -2245,34 +2064,34 @@ Table&nbsp;8: Final Tidy Dataset (Sample Rows)
 <section id="indexed-comparison-faceted-line-chart" class="level4" data-number="5.6.1">
 <h4 data-number="5.6.1" class="anchored" data-anchor-id="indexed-comparison-faceted-line-chart"><span class="header-section-number">5.6.1</span> Indexed Comparison (Faceted Line Chart)</h4>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>tidy_data <span class="ot">&lt;-</span> tidy_data <span class="sc">%&gt;%</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Income_Group =</span> <span class="fu">factor</span>(Income_Group, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Bottom 20%"</span>, <span class="st">"Middle 60%"</span>, <span class="st">"Top 20%"</span>)),</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Measure_Type =</span> <span class="fu">factor</span>(Measure_Type, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Real Income"</span>, <span class="st">"HDB Resale Price"</span>))</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tidy_data, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> Index_Value, <span class="at">color =</span> Measure_Type)) <span class="sc">+</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">100</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey50"</span>, <span class="at">linewidth =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Income_Group, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Real Income"</span> <span class="ot">=</span> <span class="st">"#2166AC"</span>, <span class="st">"HDB Resale Price"</span> <span class="ot">=</span> <span class="st">"#B2182B"</span>)) <span class="sc">+</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">2000</span>, <span class="dv">2025</span>, <span class="at">by =</span> <span class="dv">5</span>)) <span class="sc">+</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Real Household Income vs HDB Resale Price Index (2010 = 100)"</span>,</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Singapore, 2000–2025 | Income deflated by CPI (All Items)"</span>,</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Index Value (2010 = 100)"</span>,</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Measure"</span>,</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Sources: SingStat (Household Income, CPI), HDB (Resale Price Index)"</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">11</span>),</span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">13</span>),</span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">color =</span> <span class="st">"grey40"</span>),</span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">8</span>)</span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>tidy_data <span class="ot">&lt;-</span> tidy_data <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Income_Group =</span> <span class="fu">factor</span>(Income_Group, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Bottom 20%"</span>, <span class="st">"Middle 60%"</span>, <span class="st">"Top 20%"</span>)),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Measure_Type =</span> <span class="fu">factor</span>(Measure_Type, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Real Income"</span>, <span class="st">"HDB Resale Price"</span>))</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tidy_data, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> Index_Value, <span class="at">color =</span> Measure_Type)) <span class="sc">+</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">100</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey50"</span>, <span class="at">linewidth =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Income_Group, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Real Income"</span> <span class="ot">=</span> <span class="st">"#2166AC"</span>, <span class="st">"HDB Resale Price"</span> <span class="ot">=</span> <span class="st">"#B2182B"</span>)) <span class="sc">+</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">2000</span>, <span class="dv">2025</span>, <span class="at">by =</span> <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Real Household Income vs HDB Resale Price Index (2010 = 100)"</span>,</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Singapore, 2000–2025 | Income deflated by CPI (All Items)"</span>,</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Index Value (2010 = 100)"</span>,</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Measure"</span>,</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Sources: SingStat (Household Income, CPI), HDB (Resale Price Index)"</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">13</span>),</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">color =</span> <span class="st">"grey40"</span>),</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">8</span>)</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-indexed-comparison" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -2290,34 +2109,34 @@ Figure&nbsp;1: Real Household Income vs HDB Resale Price Index (2010 = 100)
 <section id="affordability-gap-by-income-group" class="level4" data-number="5.6.2">
 <h4 data-number="5.6.2" class="anchored" data-anchor-id="affordability-gap-by-income-group"><span class="header-section-number">5.6.2</span> Affordability Gap by Income Group</h4>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gap_data <span class="ot">&lt;-</span> tidy_data <span class="sc">%&gt;%</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> Measure_Type, <span class="at">values_from =</span> Index_Value) <span class="sc">%&gt;%</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Affordability_Gap =</span> <span class="st">`</span><span class="at">HDB Resale Price</span><span class="st">`</span> <span class="sc">-</span> <span class="st">`</span><span class="at">Real Income</span><span class="st">`</span>)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(gap_data, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> Affordability_Gap, <span class="at">color =</span> Income_Group)) <span class="sc">+</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Bottom 20%"</span> <span class="ot">=</span> <span class="st">"#D73027"</span>, <span class="st">"Middle 60%"</span> <span class="ot">=</span> <span class="st">"#FC8D59"</span>, <span class="st">"Top 20%"</span> <span class="ot">=</span> <span class="st">"#4575B4"</span>)) <span class="sc">+</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">2000</span>, <span class="dv">2025</span>, <span class="at">by =</span> <span class="dv">5</span>)) <span class="sc">+</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"rect"</span>, <span class="at">xmin =</span> <span class="dv">2008</span>, <span class="at">xmax =</span> <span class="dv">2009</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax =</span> <span class="cn">Inf</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">fill =</span> <span class="st">"grey"</span>) <span class="sc">+</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fl">2008.5</span>, <span class="at">y =</span> <span class="dv">75</span>, <span class="at">label =</span> <span class="st">"GFC"</span>, <span class="at">size =</span> <span class="fl">2.5</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"rect"</span>, <span class="at">xmin =</span> <span class="dv">2020</span>, <span class="at">xmax =</span> <span class="dv">2021</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax =</span> <span class="cn">Inf</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">fill =</span> <span class="st">"grey"</span>) <span class="sc">+</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fl">2020.5</span>, <span class="at">y =</span> <span class="dv">75</span>, <span class="at">label =</span> <span class="st">"COVID-19"</span>, <span class="at">size =</span> <span class="fl">2.5</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Housing Affordability Gap by Income Group"</span>,</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Gap = HDB Resale Price Index – Real Income Index (2010 = 100)</span><span class="sc">\n</span><span class="st">Positive values indicate housing prices outpacing income growth"</span>,</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Affordability Gap (Index Points)"</span>,</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Income Group"</span>,</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Sources: SingStat (Household Income, CPI), HDB (Resale Price Index)"</span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">13</span>),</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">color =</span> <span class="st">"grey40"</span>),</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>gap_data <span class="ot">&lt;-</span> tidy_data <span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> Measure_Type, <span class="at">values_from =</span> Index_Value) <span class="sc">%&gt;%</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Affordability_Gap =</span> <span class="st">`</span><span class="at">HDB Resale Price</span><span class="st">`</span> <span class="sc">-</span> <span class="st">`</span><span class="at">Real Income</span><span class="st">`</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(gap_data, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> Affordability_Gap, <span class="at">color =</span> Income_Group)) <span class="sc">+</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Bottom 20%"</span> <span class="ot">=</span> <span class="st">"#D73027"</span>, <span class="st">"Middle 60%"</span> <span class="ot">=</span> <span class="st">"#FC8D59"</span>, <span class="st">"Top 20%"</span> <span class="ot">=</span> <span class="st">"#4575B4"</span>)) <span class="sc">+</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">2000</span>, <span class="dv">2025</span>, <span class="at">by =</span> <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"rect"</span>, <span class="at">xmin =</span> <span class="dv">2008</span>, <span class="at">xmax =</span> <span class="dv">2009</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax =</span> <span class="cn">Inf</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">fill =</span> <span class="st">"grey"</span>) <span class="sc">+</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fl">2008.5</span>, <span class="at">y =</span> <span class="dv">75</span>, <span class="at">label =</span> <span class="st">"GFC"</span>, <span class="at">size =</span> <span class="fl">2.5</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"rect"</span>, <span class="at">xmin =</span> <span class="dv">2020</span>, <span class="at">xmax =</span> <span class="dv">2021</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax =</span> <span class="cn">Inf</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">fill =</span> <span class="st">"grey"</span>) <span class="sc">+</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fl">2020.5</span>, <span class="at">y =</span> <span class="dv">75</span>, <span class="at">label =</span> <span class="st">"COVID-19"</span>, <span class="at">size =</span> <span class="fl">2.5</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Housing Affordability Gap by Income Group"</span>,</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Gap = HDB Resale Price Index – Real Income Index (2010 = 100)</span><span class="sc">\n</span><span class="st">Positive values indicate housing prices outpacing income growth"</span>,</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Affordability Gap (Index Points)"</span>,</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Income Group"</span>,</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Sources: SingStat (Household Income, CPI), HDB (Resale Price Index)"</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">13</span>),</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">color =</span> <span class="st">"grey40"</span>),</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-affordability-gap" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -2351,6 +2170,7 @@ Figure&nbsp;2: Housing Affordability Gap by Income Group
 <li>Support visual annotations highlighting divergence or convergence trends.</li>
 </ul>
 <p>An affordability gap index (Housing Price Index – Real Income Index) will be computed to quantify divergence across income groups over time.</p>
+<p>Growth differentials will also be compared across income groups to assess whether affordability divergence is widening structurally over time.</p>
 </section>
 <section id="limitations" class="level2" data-number="7">
 <h2 data-number="7" class="anchored" data-anchor-id="limitations"><span class="header-section-number">7</span> Limitations</h2>
@@ -2486,14 +2306,13 @@ Figure&nbsp;2: Housing Affordability Gap by Income Group
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-      const outerScaffold = trigger.parentElement.cloneNode(true);
-      const codeEl = outerScaffold.querySelector('code');
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
         }
-      }
-      return codeEl.innerText;
+        return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy

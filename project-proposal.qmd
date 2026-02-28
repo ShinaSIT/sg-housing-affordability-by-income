@@ -25,6 +25,8 @@ execute:
 
 library(tidyverse)
 library(knitr)
+library(ggpubr)
+library(gridExtra)
 ```
 
 ## Chosen Visualization and Story
@@ -142,6 +144,7 @@ income_raw_wide <- read_csv(
   show_col_types = FALSE
 )
 
+ggtexttable(head(income_raw_wide, 6))
 # Assign column names: first col = Decile label, then years 2025 down to 2000, then trailing comma col
 years <- as.character(2025:2000)
 colnames(income_raw_wide) <- c("Decile", years, "drop")
@@ -185,6 +188,8 @@ cpi_monthly_raw <- read_csv(
   col_types = cols(.default = col_character())
 )
 
+ggtexttable(head(cpi_monthly_raw, 6))
+
 # Extract the "All Items" row and pivot to long format
 cpi_all_items <- cpi_monthly_raw %>%
   filter(DataSeries == "All Items") %>%
@@ -219,6 +224,8 @@ hdb_rpi_quarterly <- read_csv(
   show_col_types = FALSE
 )
 
+ggtexttable(head(hdb_rpi_quarterly, 6))
+
 # Compute annual average from quarterly values
 hdb_rpi_annual <- hdb_rpi_quarterly %>%
   mutate(Year = as.integer(str_extract(quarter, "\\d{4}"))) %>%
@@ -240,7 +247,8 @@ Data is inspected for missing values and inconsistencies. Time variables and inc
 - Missing years, if any, will be handled via linear interpolation only if gaps are ≤ 1 year; otherwise omitted with justification.
 - Nominal income values will be converted into real income terms using CPI (All Items) as a deflator:
 
-**Real Income = Nominal Income ÷ (CPI / CPI_2010)**
+**Real Income = Nominal Income ÷ (CPI / 100)**
+*(where CPI has been rebased to 2010 = 100)*
 
 **Indexed Value = (Real Income ÷ Real Income_2010) × 100**
 
@@ -311,17 +319,16 @@ income_real <- income_grouped %>%
     `Top 20% (Real)`    = round(`Top 20%`    / (`CPI (2010 = 100)` / 100), 0)
   )
 
-kable(
-  income_real %>%
-    select(Year,
-           `Bottom 20% (Nominal)` = `Bottom 20%`,
-           `Bottom 20% (Real)`,
-           `Middle 60% (Nominal)` = `Middle 60%`,
-           `Middle 60% (Real)`,
-           `Top 20% (Nominal)` = `Top 20%`,
-           `Top 20% (Real)`),
-  digits = 0
-)
+real_income_display <- income_real %>%
+  select(Year,
+         `Bottom 20% (Nominal)` = `Bottom 20%`,
+         `Bottom 20% (Real)`,
+         `Middle 60% (Nominal)` = `Middle 60%`,
+         `Middle 60% (Real)`,
+         `Top 20% (Nominal)` = `Top 20%`,
+         `Top 20% (Real)`)
+
+grid.table(head(real_income_display, 10))
 ```
 
 #### Step 4: Index All Series to 2010 = 100
@@ -332,13 +339,13 @@ Both real income and the HDB Resale Price Index are converted into normalised in
 #| label: tbl-indexed
 #| tbl-cap: "Indexed Values (2010 = 100) – Real Income and HDB Resale Price Index"
 
-base_2010 <- income_real %>% filter(Year == 2010)
+base_vals <- income_real %>% filter(Year == 2010)
 
 income_indexed <- income_real %>%
   mutate(
-    `Bottom 20% Index` = round(`Bottom 20% (Real)` / base_2010$`Bottom 20% (Real)` * 100, 1),
-    `Middle 60% Index` = round(`Middle 60% (Real)` / base_2010$`Middle 60% (Real)` * 100, 1),
-    `Top 20% Index`    = round(`Top 20% (Real)`    / base_2010$`Top 20% (Real)`    * 100, 1)
+    `Bottom 20% Index` = round(`Bottom 20% (Real)` / base_vals$`Bottom 20% (Real)` * 100, 1),
+    `Middle 60% Index` = round(`Middle 60% (Real)` / base_vals$`Middle 60% (Real)` * 100, 1),
+    `Top 20% Index`    = round(`Top 20% (Real)`    / base_vals$`Top 20% (Real)`    * 100, 1)
   )
 
 # Rebase HDB RPI to 2010 = 100
@@ -358,9 +365,30 @@ indexed_summary <- income_indexed %>%
 kable(indexed_summary)
 ```
 
-### Validation and Quality Checks
+### Data Validation and Quality Checks
+``` {r}
+#| label: tbl-verification
 
-Merged datasets are validated to ensure accurate alignment across time and income groups, with checks for duplication or data loss.
+# 1. Verify 2010 rebasing
+income_indexed %>% filter(Year == 2010)
+hdb_indexed %>% filter(Year == 2010)
+
+# 2. Check for missing values
+any(is.na(income_indexed))
+any(is.na(hdb_indexed))
+
+# 3. Confirm row counts
+nrow(income_indexed)
+nrow(hdb_indexed)
+```
+
+- All income and housing indices equal 100 in 2010, confirming correct rebasing.
+
+- No missing values were introduced during transformation or joins.
+
+- Row counts confirm full year coverage from 2000–2025.
+
+- Merged datasets are validated to ensure accurate alignment across time and income groups, with checks for duplication or data loss.
 
 ### Final Tidy Dataset
 
@@ -498,6 +526,8 @@ Descriptive and comparative trend analysis will be conducted to:
 - Support visual annotations highlighting divergence or convergence trends.
 
 An affordability gap index (Housing Price Index – Real Income Index) will be computed to quantify divergence across income groups over time.
+
+Growth differentials will also be compared across income groups to assess whether affordability divergence is widening structurally over time.
 
 ## Limitations
 
