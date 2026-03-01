@@ -144,16 +144,22 @@ income_raw_wide <- read_csv(
   show_col_types = FALSE
 )
 
-ggtexttable(head(income_raw_wide, 6))
-# Assign column names: first col = Decile label, then years 2025 down to 2000, then trailing comma col
+# Define years FIRST
 years <- as.character(2025:2000)
+
+# Then rename columns
 colnames(income_raw_wide) <- c("Decile", years, "drop")
 income_raw_wide <- income_raw_wide %>% select(-drop)
+
+kable(head(income_raw_wide[, 1:10], 6))
+# Assign column names: first col = Decile label, then years 2025 down to 2000, then trailing comma col
+years <- as.character(2025:2000)
 
 # Clean decile labels and remove the Total row
 income_raw_wide <- income_raw_wide %>%
   mutate(Decile = str_trim(Decile)) %>%
-  filter(Decile != "Total")
+  filter(Decile != "Total",
+        Decile != "Deciles1/")
 
 # Pivot to long format
 income_raw <- income_raw_wide %>%
@@ -188,7 +194,7 @@ cpi_monthly_raw <- read_csv(
   col_types = cols(.default = col_character())
 )
 
-ggtexttable(head(cpi_monthly_raw, 6))
+kable(head(cpi_monthly_raw[, 1:10], 6))
 
 # Extract the "All Items" row and pivot to long format
 cpi_all_items <- cpi_monthly_raw %>%
@@ -224,7 +230,7 @@ hdb_rpi_quarterly <- read_csv(
   show_col_types = FALSE
 )
 
-ggtexttable(head(hdb_rpi_quarterly, 6))
+kable(head(hdb_rpi_quarterly, 6))
 
 # Compute annual average from quarterly values
 hdb_rpi_annual <- hdb_rpi_quarterly %>%
@@ -328,7 +334,7 @@ real_income_display <- income_real %>%
          `Top 20% (Nominal)` = `Top 20%`,
          `Top 20% (Real)`)
 
-grid.table(head(real_income_display, 10))
+kable(head(real_income_display, 10))
 ```
 
 #### Step 4: Index All Series to 2010 = 100

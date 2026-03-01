@@ -298,32 +298,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggtexttable</span>(<span class="fu">head</span>(income_raw_wide, <span class="dv">6</span>))</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign column names: first col = Decile label, then years 2025 down to 2000, then trailing comma col</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="dv">2025</span><span class="sc">:</span><span class="dv">2000</span>)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(income_raw_wide) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Decile"</span>, years, <span class="st">"drop"</span>)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>income_raw_wide <span class="ot">&lt;-</span> income_raw_wide <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>drop)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean decile labels and remove the Total row</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>income_raw_wide <span class="ot">&lt;-</span> income_raw_wide <span class="sc">%&gt;%</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Decile =</span> <span class="fu">str_trim</span>(Decile)) <span class="sc">%&gt;%</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Decile <span class="sc">!=</span> <span class="st">"Total"</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Define years FIRST</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="dv">2025</span><span class="sc">:</span><span class="dv">2000</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Then rename columns</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(income_raw_wide) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Decile"</span>, years, <span class="st">"drop"</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>income_raw_wide <span class="ot">&lt;-</span> income_raw_wide <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>drop)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(income_raw_wide[, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>], <span class="dv">6</span>))</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign column names: first col = Decile label, then years 2025 down to 2000, then trailing comma col</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="dv">2025</span><span class="sc">:</span><span class="dv">2000</span>)</span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Pivot to long format</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>income_raw <span class="ot">&lt;-</span> income_raw_wide <span class="sc">%&gt;%</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>Decile, <span class="at">names_to =</span> <span class="st">"Year"</span>, <span class="at">values_to =</span> <span class="st">"Income"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">Year =</span> <span class="fu">as.integer</span>(Year),</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">Income =</span> <span class="fu">as.numeric</span>(Income)</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">&gt;=</span> <span class="dv">2000</span>, Year <span class="sc">&lt;=</span> <span class="dv">2025</span>)</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Display in wide format (years as columns) for readability</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>income_display <span class="ot">&lt;-</span> income_raw <span class="sc">%&gt;%</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> Decile, <span class="at">values_from =</span> Income) <span class="sc">%&gt;%</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year)</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(income_display)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean decile labels and remove the Total row</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>income_raw_wide <span class="ot">&lt;-</span> income_raw_wide <span class="sc">%&gt;%</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Decile =</span> <span class="fu">str_trim</span>(Decile)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Decile <span class="sc">!=</span> <span class="st">"Total"</span>,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        Decile <span class="sc">!=</span> <span class="st">"Deciles1/"</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Pivot to long format</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>income_raw <span class="ot">&lt;-</span> income_raw_wide <span class="sc">%&gt;%</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>Decile, <span class="at">names_to =</span> <span class="st">"Year"</span>, <span class="at">values_to =</span> <span class="st">"Income"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">Year =</span> <span class="fu">as.integer</span>(Year),</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">Income =</span> <span class="fu">as.numeric</span>(Income)</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">&gt;=</span> <span class="dv">2000</span>, Year <span class="sc">&lt;=</span> <span class="dv">2025</span>)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Display in wide format (years as columns) for readability</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>income_display <span class="ot">&lt;-</span> income_raw <span class="sc">%&gt;%</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> Decile, <span class="at">values_from =</span> Income) <span class="sc">%&gt;%</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year)</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(income_display)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-raw-income" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-raw-income-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -331,32 +337,127 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 </figcaption>
 <div aria-describedby="tbl-raw-income-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="project-proposal_files/figure-html/tbl-raw-income-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Decile</th>
+<th style="text-align: right;">2025</th>
+<th style="text-align: right;">2024</th>
+<th style="text-align: right;">2023</th>
+<th style="text-align: right;">2022</th>
+<th style="text-align: right;">2021</th>
+<th style="text-align: right;">2020</th>
+<th style="text-align: right;">2019</th>
+<th style="text-align: right;">2018</th>
+<th style="text-align: right;">2017</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Deciles1/</td>
+<td style="text-align: right;">2025</td>
+<td style="text-align: right;">2024</td>
+<td style="text-align: right;">2023</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: right;">2021</td>
+<td style="text-align: right;">2020</td>
+<td style="text-align: right;">2019</td>
+<td style="text-align: right;">2018</td>
+<td style="text-align: right;">2017</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Total</td>
+<td style="text-align: right;">15205</td>
+<td style="text-align: right;">14570</td>
+<td style="text-align: right;">13986</td>
+<td style="text-align: right;">13152</td>
+<td style="text-align: right;">12301</td>
+<td style="text-align: right;">12258</td>
+<td style="text-align: right;">12411</td>
+<td style="text-align: right;">12161</td>
+<td style="text-align: right;">12051</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1st (Lowest)</td>
+<td style="text-align: right;">2685</td>
+<td style="text-align: right;">2434</td>
+<td style="text-align: right;">2338</td>
+<td style="text-align: right;">2317</td>
+<td style="text-align: right;">2042</td>
+<td style="text-align: right;">1978</td>
+<td style="text-align: right;">2047</td>
+<td style="text-align: right;">1956</td>
+<td style="text-align: right;">1938</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2nd</td>
+<td style="text-align: right;">5446</td>
+<td style="text-align: right;">5032</td>
+<td style="text-align: right;">4921</td>
+<td style="text-align: right;">4626</td>
+<td style="text-align: right;">4359</td>
+<td style="text-align: right;">4292</td>
+<td style="text-align: right;">4116</td>
+<td style="text-align: right;">4009</td>
+<td style="text-align: right;">3934</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3rd</td>
+<td style="text-align: right;">7736</td>
+<td style="text-align: right;">7159</td>
+<td style="text-align: right;">7020</td>
+<td style="text-align: right;">6393</td>
+<td style="text-align: right;">5847</td>
+<td style="text-align: right;">5853</td>
+<td style="text-align: right;">5913</td>
+<td style="text-align: right;">5846</td>
+<td style="text-align: right;">5818</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4th</td>
+<td style="text-align: right;">10104</td>
+<td style="text-align: right;">9632</td>
+<td style="text-align: right;">9323</td>
+<td style="text-align: right;">8454</td>
+<td style="text-align: right;">8141</td>
+<td style="text-align: right;">7841</td>
+<td style="text-align: right;">7796</td>
+<td style="text-align: right;">7644</td>
+<td style="text-align: right;">7422</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="cell-output-display">
 <table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 5%">
-<col style="width: 11%">
-<col style="width: 14%">
-<col style="width: 5%">
-<col style="width: 5%">
-<col style="width: 6%">
-<col style="width: 6%">
-<col style="width: 6%">
-<col style="width: 6%">
-<col style="width: 6%">
 <col style="width: 6%">
 <col style="width: 16%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 18%">
 </colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: right;">Year</th>
-<th style="text-align: right;">Deciles1/</th>
 <th style="text-align: right;">1st (Lowest)</th>
 <th style="text-align: right;">2nd</th>
 <th style="text-align: right;">3rd</th>
@@ -372,7 +473,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <tbody>
 <tr class="odd">
 <td style="text-align: right;">2000</td>
-<td style="text-align: right;">2000</td>
 <td style="text-align: right;">1382</td>
 <td style="text-align: right;">2241</td>
 <td style="text-align: right;">2987</td>
@@ -385,7 +485,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <td style="text-align: right;">15952</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2001</td>
 <td style="text-align: right;">2001</td>
 <td style="text-align: right;">1331</td>
 <td style="text-align: right;">2276</td>
@@ -400,7 +499,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2002</td>
-<td style="text-align: right;">2002</td>
 <td style="text-align: right;">1265</td>
 <td style="text-align: right;">2180</td>
 <td style="text-align: right;">2947</td>
@@ -413,7 +511,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <td style="text-align: right;">17006</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2003</td>
 <td style="text-align: right;">2003</td>
 <td style="text-align: right;">1223</td>
 <td style="text-align: right;">2165</td>
@@ -428,7 +525,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2004</td>
-<td style="text-align: right;">2004</td>
 <td style="text-align: right;">1232</td>
 <td style="text-align: right;">2198</td>
 <td style="text-align: right;">2990</td>
@@ -441,7 +537,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <td style="text-align: right;">17502</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2005</td>
 <td style="text-align: right;">2005</td>
 <td style="text-align: right;">1257</td>
 <td style="text-align: right;">2256</td>
@@ -456,7 +551,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2006</td>
-<td style="text-align: right;">2006</td>
 <td style="text-align: right;">1260</td>
 <td style="text-align: right;">2306</td>
 <td style="text-align: right;">3180</td>
@@ -469,7 +563,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <td style="text-align: right;">19104</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2007</td>
 <td style="text-align: right;">2007</td>
 <td style="text-align: right;">1322</td>
 <td style="text-align: right;">2417</td>
@@ -484,7 +577,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2008</td>
-<td style="text-align: right;">2008</td>
 <td style="text-align: right;">1401</td>
 <td style="text-align: right;">2697</td>
 <td style="text-align: right;">3831</td>
@@ -497,7 +589,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <td style="text-align: right;">23986</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2009</td>
 <td style="text-align: right;">2009</td>
 <td style="text-align: right;">1362</td>
 <td style="text-align: right;">2695</td>
@@ -512,7 +603,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2010</td>
-<td style="text-align: right;">2010</td>
 <td style="text-align: right;">1498</td>
 <td style="text-align: right;">2942</td>
 <td style="text-align: right;">4160</td>
@@ -525,7 +615,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <td style="text-align: right;">24454</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2011</td>
 <td style="text-align: right;">2011</td>
 <td style="text-align: right;">1583</td>
 <td style="text-align: right;">3133</td>
@@ -540,7 +629,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2012</td>
-<td style="text-align: right;">2012</td>
 <td style="text-align: right;">1644</td>
 <td style="text-align: right;">3305</td>
 <td style="text-align: right;">4788</td>
@@ -553,7 +641,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <td style="text-align: right;">30388</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2013</td>
 <td style="text-align: right;">2013</td>
 <td style="text-align: right;">1711</td>
 <td style="text-align: right;">3371</td>
@@ -568,7 +655,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2014</td>
-<td style="text-align: right;">2014</td>
 <td style="text-align: right;">1776</td>
 <td style="text-align: right;">3643</td>
 <td style="text-align: right;">5229</td>
@@ -581,7 +667,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <td style="text-align: right;">31173</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2015</td>
 <td style="text-align: right;">2015</td>
 <td style="text-align: right;">1926</td>
 <td style="text-align: right;">3823</td>
@@ -596,7 +681,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2016</td>
-<td style="text-align: right;">2016</td>
 <td style="text-align: right;">1910</td>
 <td style="text-align: right;">3911</td>
 <td style="text-align: right;">5689</td>
@@ -609,7 +693,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <td style="text-align: right;">30211</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2017</td>
 <td style="text-align: right;">2017</td>
 <td style="text-align: right;">1938</td>
 <td style="text-align: right;">3934</td>
@@ -624,7 +707,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2018</td>
-<td style="text-align: right;">2018</td>
 <td style="text-align: right;">1956</td>
 <td style="text-align: right;">4009</td>
 <td style="text-align: right;">5846</td>
@@ -637,7 +719,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <td style="text-align: right;">31025</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2019</td>
 <td style="text-align: right;">2019</td>
 <td style="text-align: right;">2047</td>
 <td style="text-align: right;">4116</td>
@@ -652,7 +733,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2020</td>
-<td style="text-align: right;">2020</td>
 <td style="text-align: right;">1978</td>
 <td style="text-align: right;">4292</td>
 <td style="text-align: right;">5853</td>
@@ -665,7 +745,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <td style="text-align: right;">31076</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2021</td>
 <td style="text-align: right;">2021</td>
 <td style="text-align: right;">2042</td>
 <td style="text-align: right;">4359</td>
@@ -680,7 +759,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2022</td>
-<td style="text-align: right;">2022</td>
 <td style="text-align: right;">2317</td>
 <td style="text-align: right;">4626</td>
 <td style="text-align: right;">6393</td>
@@ -693,7 +771,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <td style="text-align: right;">31486</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2023</td>
 <td style="text-align: right;">2023</td>
 <td style="text-align: right;">2338</td>
 <td style="text-align: right;">4921</td>
@@ -708,7 +785,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2024</td>
-<td style="text-align: right;">2024</td>
 <td style="text-align: right;">2434</td>
 <td style="text-align: right;">5032</td>
 <td style="text-align: right;">7159</td>
@@ -721,7 +797,6 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <td style="text-align: right;">34511</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2025</td>
 <td style="text-align: right;">2025</td>
 <td style="text-align: right;">2685</td>
 <td style="text-align: right;">5446</td>
@@ -755,7 +830,7 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_types =</span> <span class="fu">cols</span>(<span class="at">.default =</span> <span class="fu">col_character</span>())</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggtexttable</span>(<span class="fu">head</span>(cpi_monthly_raw, <span class="dv">6</span>))</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(cpi_monthly_raw[, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>], <span class="dv">6</span>))</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the "All Items" row and pivot to long format</span></span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>cpi_all_items <span class="ot">&lt;-</span> cpi_monthly_raw <span class="sc">%&gt;%</span></span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(DataSeries <span class="sc">==</span> <span class="st">"All Items"</span>) <span class="sc">%&gt;%</span></span>
@@ -780,11 +855,108 @@ Table&nbsp;2: Raw Data – Consumer Price Index, All Items (2024 = 100), Annual 
 </figcaption>
 <div aria-describedby="tbl-raw-cpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="project-proposal_files/figure-html/tbl-raw-cpi-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 44%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">DataSeries</th>
+<th style="text-align: left;">2026Jan</th>
+<th style="text-align: left;">2025Dec</th>
+<th style="text-align: left;">2025Nov</th>
+<th style="text-align: left;">2025Oct</th>
+<th style="text-align: left;">2025Sep</th>
+<th style="text-align: left;">2025Aug</th>
+<th style="text-align: left;">2025Jul</th>
+<th style="text-align: left;">2025Jun</th>
+<th style="text-align: left;">2025May</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">All Items</td>
+<td style="text-align: left;">101.333</td>
+<td style="text-align: left;">101.854</td>
+<td style="text-align: left;">101.579</td>
+<td style="text-align: left;">101.33</td>
+<td style="text-align: left;">101.32</td>
+<td style="text-align: left;">100.963</td>
+<td style="text-align: left;">100.447</td>
+<td style="text-align: left;">100.9</td>
+<td style="text-align: left;">100.978</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Food Hampers, Incl Fruits</td>
+<td style="text-align: left;">95.799</td>
+<td style="text-align: left;">95.799</td>
+<td style="text-align: left;">95.799</td>
+<td style="text-align: left;">95.799</td>
+<td style="text-align: left;">95.799</td>
+<td style="text-align: left;">95.799</td>
+<td style="text-align: left;">95.799</td>
+<td style="text-align: left;">95.799</td>
+<td style="text-align: left;">95.799</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Food</td>
+<td style="text-align: left;">102.042</td>
+<td style="text-align: left;">101.79</td>
+<td style="text-align: left;">101.678</td>
+<td style="text-align: left;">101.617</td>
+<td style="text-align: left;">101.307</td>
+<td style="text-align: left;">101.137</td>
+<td style="text-align: left;">101.05</td>
+<td style="text-align: left;">100.865</td>
+<td style="text-align: left;">100.925</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Diagnostic Imaging Services &amp; Medical Laboratory Services</td>
+<td style="text-align: left;">102.652</td>
+<td style="text-align: left;">102.652</td>
+<td style="text-align: left;">102.51</td>
+<td style="text-align: left;">102.509</td>
+<td style="text-align: left;">102.27</td>
+<td style="text-align: left;">102.19</td>
+<td style="text-align: left;">102.063</td>
+<td style="text-align: left;">102.037</td>
+<td style="text-align: left;">101.714</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Food Excl Food &amp; Beverage Serving Services</td>
+<td style="text-align: left;">102.216</td>
+<td style="text-align: left;">101.673</td>
+<td style="text-align: left;">101.544</td>
+<td style="text-align: left;">101.502</td>
+<td style="text-align: left;">100.919</td>
+<td style="text-align: left;">100.78</td>
+<td style="text-align: left;">100.721</td>
+<td style="text-align: left;">100.384</td>
+<td style="text-align: left;">100.593</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rice &amp; Cereal Products</td>
+<td style="text-align: left;">102.263</td>
+<td style="text-align: left;">101.793</td>
+<td style="text-align: left;">102.196</td>
+<td style="text-align: left;">101.893</td>
+<td style="text-align: left;">101.176</td>
+<td style="text-align: left;">100.998</td>
+<td style="text-align: left;">101.505</td>
+<td style="text-align: left;">101.366</td>
+<td style="text-align: left;">101.77</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="cell-output-display">
 <table class="do-not-create-environment cell caption-top table table-sm table-striped small">
@@ -919,7 +1091,7 @@ Table&nbsp;2: Raw Data – Consumer Price Index, All Items (2024 = 100), Annual 
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggtexttable</span>(<span class="fu">head</span>(hdb_rpi_quarterly, <span class="dv">6</span>))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(hdb_rpi_quarterly, <span class="dv">6</span>))</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute annual average from quarterly values</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>hdb_rpi_annual <span class="ot">&lt;-</span> hdb_rpi_quarterly <span class="sc">%&gt;%</span></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Year =</span> <span class="fu">as.integer</span>(<span class="fu">str_extract</span>(quarter, <span class="st">"</span><span class="sc">\\</span><span class="st">d{4}"</span>))) <span class="sc">%&gt;%</span></span>
@@ -936,11 +1108,40 @@ Table&nbsp;3: Raw Data – HDB Resale Price Index (1Q2009 = 100), Annual Average
 </figcaption>
 <div aria-describedby="tbl-raw-hdb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="project-proposal_files/figure-html/tbl-raw-hdb-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">quarter</th>
+<th style="text-align: right;">index</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1990-Q1</td>
+<td style="text-align: right;">24.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1990-Q2</td>
+<td style="text-align: right;">24.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1990-Q3</td>
+<td style="text-align: right;">25.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1990-Q4</td>
+<td style="text-align: right;">24.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1991-Q1</td>
+<td style="text-align: right;">24.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1991-Q2</td>
+<td style="text-align: right;">25.5</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="cell-output-display">
 <table class="do-not-create-environment cell caption-top table table-sm table-striped small">
@@ -1471,7 +1672,7 @@ Table&nbsp;5: CPI Rebased to 2010 = 100
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Top 20% (Nominal)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Top 20%</span><span class="st">`</span>,</span>
 <span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Top 20% (Real)</span><span class="st">`</span>)</span>
 <span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.table</span>(<span class="fu">head</span>(real_income_display, <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(real_income_display, <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-real-income" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-real-income-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1479,11 +1680,120 @@ Table&nbsp;6: Real Household Income by Income Group (Constant 2010 SGD)
 </figcaption>
 <div aria-describedby="tbl-real-income-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="project-proposal_files/figure-html/tbl-real-income-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 18%">
+<col style="width: 15%">
+<col style="width: 18%">
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Year</th>
+<th style="text-align: right;">Bottom 20% (Nominal)</th>
+<th style="text-align: right;">Bottom 20% (Real)</th>
+<th style="text-align: right;">Middle 60% (Nominal)</th>
+<th style="text-align: right;">Middle 60% (Real)</th>
+<th style="text-align: right;">Top 20% (Nominal)</th>
+<th style="text-align: right;">Top 20% (Real)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">1811.5</td>
+<td style="text-align: right;">2129</td>
+<td style="text-align: right;">5076.000</td>
+<td style="text-align: right;">5965</td>
+<td style="text-align: right;">12706.5</td>
+<td style="text-align: right;">14931</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2001</td>
+<td style="text-align: right;">1803.5</td>
+<td style="text-align: right;">2097</td>
+<td style="text-align: right;">5394.000</td>
+<td style="text-align: right;">6272</td>
+<td style="text-align: right;">14116.5</td>
+<td style="text-align: right;">16415</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2002</td>
+<td style="text-align: right;">1722.5</td>
+<td style="text-align: right;">2010</td>
+<td style="text-align: right;">5264.167</td>
+<td style="text-align: right;">6143</td>
+<td style="text-align: right;">13656.0</td>
+<td style="text-align: right;">15935</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2003</td>
+<td style="text-align: right;">1694.0</td>
+<td style="text-align: right;">1967</td>
+<td style="text-align: right;">5332.500</td>
+<td style="text-align: right;">6193</td>
+<td style="text-align: right;">13715.5</td>
+<td style="text-align: right;">15930</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">1715.0</td>
+<td style="text-align: right;">1960</td>
+<td style="text-align: right;">5266.500</td>
+<td style="text-align: right;">6019</td>
+<td style="text-align: right;">13934.5</td>
+<td style="text-align: right;">15925</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2005</td>
+<td style="text-align: right;">1756.5</td>
+<td style="text-align: right;">1998</td>
+<td style="text-align: right;">5611.500</td>
+<td style="text-align: right;">6384</td>
+<td style="text-align: right;">14402.5</td>
+<td style="text-align: right;">16385</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2006</td>
+<td style="text-align: right;">1783.0</td>
+<td style="text-align: right;">2008</td>
+<td style="text-align: right;">5705.667</td>
+<td style="text-align: right;">6425</td>
+<td style="text-align: right;">15090.5</td>
+<td style="text-align: right;">16994</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2007</td>
+<td style="text-align: right;">1869.5</td>
+<td style="text-align: right;">2061</td>
+<td style="text-align: right;">6180.167</td>
+<td style="text-align: right;">6814</td>
+<td style="text-align: right;">16779.0</td>
+<td style="text-align: right;">18499</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2008</td>
+<td style="text-align: right;">2049.0</td>
+<td style="text-align: right;">2119</td>
+<td style="text-align: right;">7019.000</td>
+<td style="text-align: right;">7259</td>
+<td style="text-align: right;">19001.0</td>
+<td style="text-align: right;">19649</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2009</td>
+<td style="text-align: right;">2028.5</td>
+<td style="text-align: right;">2087</td>
+<td style="text-align: right;">6931.833</td>
+<td style="text-align: right;">7132</td>
+<td style="text-align: right;">18183.5</td>
+<td style="text-align: right;">18707</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </figure>
