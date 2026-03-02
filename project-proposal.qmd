@@ -43,6 +43,9 @@ While the original visualization compares income with a general purchasing power
 
 The extended time horizon (2000–2025) allows examination of affordability dynamics across multiple economic cycles, including the Global Financial Crisis (2008–2009) and the COVID-19 period.
 
+In Singapore, housing is not merely a shelter cost. It is the primary store of household wealth and the single largest financial commitment most families will make. For lower-income households, the ability to purchase an HDB resale flat is directly contingent on whether their incomes have grown fast enough to absorb rising resale prices. 
+When housing prices outpace income growth, younger and lower-income households face longer saving horizons, higher debt burdens, and reduced intergenerational mobility. Understanding how this affordability dynamic has evolved across income groups, and whether gaps have widened or narrowed, carries direct policy relevance for housing grant design, CPF policy, and income support programmes.
+
 The refined research question guiding this project is:
 
 **Did real income growth for lower-income households keep pace with housing price growth between 2000 and 2025, and have affordability gaps widened across income groups over time?**
@@ -472,6 +475,8 @@ ggplot(tidy_data, aes(x = Year, y = Index_Value, color = Measure_Type)) +
     axis.text.x = element_text(angle = 45, hjust = 1, size = 8)
   )
 ```
+The faceted line chart reveals that prior to 2010, all three income groups had real income indices running broadly in line with or above the HDB resale price index, suggesting relative affordability stability in the early 2000s. Post-2010, the HDB Resale Price Index diverges sharply upward, by 2025, it reaches 171.0 compared to 136.3, 141.2, and 115.3 for Bottom 20%, Middle 60%, and Top 20% real income respectively. 
+Notably, the Top 20% panel shows the widest gap in absolute terms by 2025, which appears counterintuitive but reflects that high-income nominal growth was partly offset by CPI deflation, while resale prices continued to rise. The Bottom 20% panel shows the most concerning trajectory, real income growth has lagged behind HDB price growth since approximately 2021, coinciding with the post-COVID resale market surge.
 
 #### Affordability Gap by Income Group
 
@@ -510,6 +515,11 @@ ggplot(gap_data, aes(x = Year, y = Affordability_Gap, color = Income_Group)) +
     panel.grid.minor = element_blank()
   )
 ```
+Figure 2 quantifies the affordability gap as the difference between the HDB Resale Price Index and the Real Income Index (both rebased to 2010 = 100). Before 2010, all three income groups show negative or near-zero gaps, meaning income growth was keeping pace with or outpacing housing prices. 
+From 2010 onward, the gap turns persistently positive for all groups. The sharpest deterioration occurs post-2020: by 2025, the Bottom 20% faces a gap of 34.7 index points (171.0 − 136.3), the Middle 60% faces 29.8 points (171.0 − 141.2), while the Top 20% faces the largest gap at 55.7 points (171.0 − 115.3).
+It is important to note that a larger index gap does not necessarily imply greater financial stress, the Top 20% retain substantially higher absolute incomes and greater access to financing, making this gap an indicator of relative price growth divergence rather than housing distress.
+The Top 20% result warrants careful interpretation, their real income growth has plateaued since around 2013, suggesting that upper-income households are not immune to affordability pressure, particularly when purchasing larger or more central resale units. 
+The GFC shaded region (2008–2009) shows a temporary compression of gaps as housing prices dipped, while the COVID-19 period (2020–2021) marks the inflection point after which all gaps widen dramatically.
 
 The resulting dataset contains four primary analytical dimensions:
 
@@ -525,29 +535,41 @@ This multidimensional structure enables comparative layering and faceted visuali
 
 ## Planned Data Analysis
 
-Descriptive and comparative trend analysis will be conducted to:
+The following analytical methods will be applied to support and extend the visualization findings:
 
-- Compare income and housing price growth rates across income groups.
-- Identify periods where housing prices outpace income growth.
-- Support visual annotations highlighting divergence or convergence trends.
+**1. Compound Annual Growth Rate (CAGR) Comparison**
+CAGR will be computed for real income and HDB resale prices across three sub-periods, 2000–2010 (pre-financial crisis to base year), 2010–2020 (post-GFC expansion), and 2020–2025 (COVID-19 and post-pandemic surge), for each income group. 
+This allows structured identification of periods where housing price growth structurally outpaced income growth, and whether this divergence is accelerating.
 
-An affordability gap index (Housing Price Index – Real Income Index) will be computed to quantify divergence across income groups over time.
+**2. Affordability Gap Index**
+An affordability gap index (HDB Resale Price Index − Real Income Index) will be computed annually for each income group. 
+A positive and widening gap indicates worsening affordability. 
+This metric directly addresses the research question and will be annotated on the final visualization.
 
-Growth differentials will also be compared across income groups to assess whether affordability divergence is widening structurally over time.
+**3. Price-to-Income Ratio (Supplementary Metric)**
+A supplementary price-to-income ratio will be computed as nominal HDB Resale Price Index divided by nominal household income index (not deflated), to provide an alternative affordability lens that is more familiar to general audiences and policymakers. This will be included as a supporting annotation or table alongside the main visualization.
+
+These methods are intentionally kept within descriptive and comparative analysis, consistent with the module's scope, while providing sufficient analytical depth to generate meaningful and defensible insights.
 
 ## Limitations
 
-This analysis relies on CPI (All Items) to deflate income, which may not fully capture housing-specific inflation pressures. The HDB resale price index reflects transaction prices but does not account for mortgage interest rates or financing conditions. Household income data represents gross income and does not reflect disposable income after taxes and transfers. Additionally, index rebasing improves comparability of growth rates but obscures absolute level differences across income groups.
+This analysis carries several limitations that affect the interpretation of findings. 
+First, CPI (All Items) is used to deflate nominal income into real terms. 
+Since housing constitutes a proportionally larger share of expenditure for lower-income households, using a general price index likely *understates* the real cost burden on the Bottom 20%, meaning the affordability gap presented here is conservative, true purchasing power erosion for lower-income groups may be worse than depicted. 
+Second, the HDB Resale Price Index reflects transaction prices but does not incorporate mortgage interest rates or total debt servicing obligations. 
+During periods of rising interest rates (e.g., 2022–2024), actual affordability deteriorated faster than the index alone suggests, as monthly repayments increased even when prices stabilised. 
+Third, household income data captures gross employment income including employer CPF contributions, which are not directly spendable, using gross income *overstates* the disposable income available for housing payments, introducing an upward bias in income figures. 
+Fourth, index rebasing to 2010 = 100 improves growth rate comparability but obscures absolute level differences: a household earning $1,800 and one earning $19,000 both index to 100 in 2010, which may mask the structural advantages higher-income groups hold in accessing financing, grants, or larger flats.
 
 ## Planned Work Distribution
 
 | Team Member | Responsibilities |
-|-----------------------------|-------------------------------------------|
+|---|---|
 | Shina Shih Xin Rong | Project coordination, narrative development, Quarto assembly |
-| Jeanie Cherie Chua Yue-Ning | Data collection and cleaning |
+| Jeanie Cherie Chua Yue-Ning | Data collection and raw data ingestion |
 | Claudia Yue Xin Ying | Data transformation and index construction |
-| Nurul Zahirah Binte Muhamadnoh | Visualization design and implementation |
-| Anushka Chourasia | Data validation and analysis support |
+| Nurul Zahirah Binte Muhamadnoh | Visualization design and preliminary charts |
+| Anushka Chourasia | Data validation, quality checks, and analysis support |
 
 ## Appendix: Alternative Design Concepts
 
@@ -560,13 +582,15 @@ The following visual mockups are AI-generated conceptual charts created to illus
 This design separates income groups (Bottom 20%, Middle 60%, Top 20%) into individual panels with consistent y-axis scales.
 
 Why considered:
-- Reduces visual clutter.
-- Eliminates dual-axis distortion.
-- Makes within-group divergence clear.
+- Reduces visual clutter
+- Eliminates dual-axis distortion
+- Makes within-group divergence clear
 
 Why not selected as primary design:
-- Requires more vertical space.
-- Cross-group comparison less immediate.
+- Requires more vertical space
+- Cross-group comparison less immediate
+
+*Note: The preliminary visualization in Section 5.6 adopts a faceted layout structurally similar to Concept A. This was done intentionally for exploratory purposes, the faceted approach serves as the data engineering preview, while the final improved visualization will integrate the indexed comparison approach from Concept C with design refinements not possible at the proposal stage.*
 
 ### Concept B: Income–Housing Gap Area Chart
 
@@ -575,12 +599,12 @@ Why not selected as primary design:
 This design shades the difference between real income index and housing price index to highlight affordability gaps.
 
 Why considered:
-- Visually emphasises divergence.
-- Intuitive for non-technical audiences.
+- Visually emphasises divergence
+- Intuitive for non-technical audiences
 
 Why not selected:
-- Area shading may exaggerate perceived magnitude.
-- Less academically neutral in tone.
+- Area shading may exaggerate perceived magnitude
+- Less academically neutral in tone
 
 ### Concept C: Indexed Comparison (Base Year = 2010 = 100)
 
@@ -589,7 +613,7 @@ Why not selected:
 Indexed comparison removes nominal scale distortion and eliminates the dual-axis bias present in the original design. By converting income and housing series into normalised indices rebased to 2010 = 100, all variables share a common baseline, enabling direct growth comparison without perceptual manipulation.
 
 Why preferred:
-- Standard economic practice.
-- Removes scale distortion.
-- Clean and professional.
-- Supports analytical interpretation.
+- Standard economic practice
+- Removes scale distortion
+- Clean and professional
+- Supports analytical interpretation
