@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -67,14 +67,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="project-proposal_files/libs/clipboard/clipboard.min.js"></script>
 <script src="project-proposal_files/libs/quarto-html/quarto.js" type="module"></script>
 <script src="project-proposal_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="project-proposal_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="project-proposal_files/libs/quarto-html/popper.min.js"></script>
 <script src="project-proposal_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="project-proposal_files/libs/quarto-html/anchor.min.js"></script>
 <link href="project-proposal_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="project-proposal_files/libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="project-proposal_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="project-proposal_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="project-proposal_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="project-proposal_files/libs/bootstrap/bootstrap-813c323200a87c37e262811031999de4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="project-proposal_files/libs/bootstrap/bootstrap-4d7f0bce1131f3e5f9547cd857cfbfc8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -185,6 +186,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 data-number="1.2" class="anchored" data-anchor-id="intended-story-key-message"><span class="header-section-number">1.2</span> Intended Story / Key Message</h3>
 <p>While the original visualization compares income with a general purchasing power index, it does not isolate specific cost pressures such as housing. This project refocuses the analysis on housing affordability, as housing represents the largest expenditure component for Singapore households.</p>
 <p>The extended time horizon (2000–2025) allows examination of affordability dynamics across multiple economic cycles, including the Global Financial Crisis (2008–2009) and the COVID-19 period.</p>
+<p>In Singapore, housing is not merely a shelter cost. It is the primary store of household wealth and the single largest financial commitment most families will make. For lower-income households, the ability to purchase an HDB resale flat is directly contingent on whether their incomes have grown fast enough to absorb rising resale prices. When housing prices outpace income growth, younger and lower-income households face longer saving horizons, higher debt burdens, and reduced intergenerational mobility. Understanding how this affordability dynamic has evolved across income groups, and whether gaps have widened or narrowed, carries direct policy relevance for housing grant design, CPF policy, and income support programmes.</p>
 <p>The refined research question guiding this project is:</p>
 <p><strong>Did real income growth for lower-income households keep pace with housing price growth between 2000 and 2025, and have affordability gaps widened across income groups over time?</strong></p>
 <p>Preliminary inspection suggests a general upward trend across most income deciles between 2000 and the latest available year, with a temporary decline during the COVID-19 period around 2020.</p>
@@ -284,7 +286,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="original-data-household-income-by-decile-nominal-sgd" class="level4" data-number="5.1.1">
 <h4 data-number="5.1.1" class="anchored" data-anchor-id="original-data-household-income-by-decile-nominal-sgd"><span class="header-section-number">5.1.1</span> Original Data: Household Income by Decile (Nominal SGD)</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: SingStat Table CT/17880</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: SingStat Table CT/17880</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The CSV has 10 metadata/header rows to skip.</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Row 11 (index 0 after skip) = column headers: Deciles1/, 2025, 2024, ..., 2000</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Rows 12–23 = Total + 10 decile rows</span></span>
@@ -329,7 +331,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> Decile, <span class="at">values_from =</span> Income) <span class="sc">%&gt;%</span></span>
 <span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year)</span>
 <span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(income_display)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(income_display)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-raw-income" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-raw-income-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -820,7 +822,7 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <section id="original-data-consumer-price-index-cpi-all-items" class="level4" data-number="5.1.2">
 <h4 data-number="5.1.2" class="anchored" data-anchor-id="original-data-consumer-price-index-cpi-all-items"><span class="header-section-number">5.1.2</span> Original Data: Consumer Price Index (CPI – All Items)</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: SingStat - CPI (2024 as Base Year), Monthly</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: SingStat - CPI (2024 as Base Year), Monthly</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Format: Row 1 = headers (DataSeries, 2026Jan, 2025Dec, ..., 1961Jan)</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#         Row 2 = "All Items" row with monthly index values</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># We extract the "All Items" row and compute annual averages.</span></span>
@@ -847,7 +849,7 @@ Table&nbsp;1: Raw Data – Average Monthly Household Employment Income (Includin
 <span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">CPI_2024base =</span> <span class="fu">round</span>(<span class="fu">mean</span>(CPI), <span class="dv">2</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year)</span>
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(cpi_annual, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"CPI (2024 = 100)"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(cpi_annual, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"CPI (2024 = 100)"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-raw-cpi" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-raw-cpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1082,7 +1084,7 @@ Table&nbsp;2: Raw Data – Consumer Price Index, All Items (2024 = 100), Annual 
 <section id="original-data-hdb-resale-price-index" class="level4" data-number="5.1.3">
 <h4 data-number="5.1.3" class="anchored" data-anchor-id="original-data-hdb-resale-price-index"><span class="header-section-number">5.1.3</span> Original Data: HDB Resale Price Index</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: data.gov.sg / HDB</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: data.gov.sg / HDB</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Format: quarter (e.g. "2000-Q1"), index (numeric)</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># We compute annual averages from quarterly data.</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -1100,7 +1102,7 @@ Table&nbsp;2: Raw Data – Consumer Price Index, All Items (2024 = 100), Annual 
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">HDB_RPI =</span> <span class="fu">round</span>(<span class="fu">mean</span>(index), <span class="dv">1</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year)</span>
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(hdb_rpi_annual, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"HDB Resale Price Index (1Q2009 = 100)"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(hdb_rpi_annual, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"HDB Resale Price Index (1Q2009 = 100)"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-raw-hdb" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-raw-hdb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1289,7 +1291,7 @@ Table&nbsp;3: Raw Data – HDB Resale Price Index (1Q2009 = 100), Annual Average
 <li><strong>Top 20%</strong>: Average of 9th and 10th deciles</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>income_wide_by_decile <span class="ot">&lt;-</span> income_raw <span class="sc">%&gt;%</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>income_wide_by_decile <span class="ot">&lt;-</span> income_raw <span class="sc">%&gt;%</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> Decile, <span class="at">values_from =</span> Income)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>income_grouped <span class="ot">&lt;-</span> income_wide_by_decile <span class="sc">%&gt;%</span></span>
@@ -1301,7 +1303,7 @@ Table&nbsp;3: Raw Data – HDB Resale Price Index (1Q2009 = 100), Annual Average
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Year, <span class="st">`</span><span class="at">Bottom 20%</span><span class="st">`</span>, <span class="st">`</span><span class="at">Middle 60%</span><span class="st">`</span>, <span class="st">`</span><span class="at">Top 20%</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year)</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(income_grouped, <span class="at">digits =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(income_grouped, <span class="at">digits =</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-grouped-income" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-grouped-income-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1487,13 +1489,13 @@ Table&nbsp;4: Aggregated Nominal Household Income by Income Group (SGD)
 <h4 data-number="5.3.2" class="anchored" data-anchor-id="step-2-rebase-cpi-to-2010-100"><span class="header-section-number">5.3.2</span> Step 2: Rebase CPI to 2010 = 100</h4>
 <p>The CPI series (originally based at 2024 = 100) is rebased to 2010 = 100 so that all indices share a common reference year.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cpi_2010_val <span class="ot">&lt;-</span> cpi_annual <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(CPI_2024base)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cpi_2010_val <span class="ot">&lt;-</span> cpi_annual <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(CPI_2024base)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>cpi <span class="ot">&lt;-</span> cpi_annual <span class="sc">%&gt;%</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">CPI (2010 = 100)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(CPI_2024base <span class="sc">/</span> cpi_2010_val <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)) <span class="sc">%&gt;%</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Year, <span class="st">`</span><span class="at">CPI (2024 = 100)</span><span class="st">`</span> <span class="ot">=</span> CPI_2024base, <span class="st">`</span><span class="at">CPI (2010 = 100)</span><span class="st">`</span>)</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(cpi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(cpi)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-cpi-rebased" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cpi-rebased-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1652,7 +1654,7 @@ Table&nbsp;5: CPI Rebased to 2010 = 100
 <h4 data-number="5.3.3" class="anchored" data-anchor-id="step-3-deflate-nominal-income-to-real-income-2010-sgd"><span class="header-section-number">5.3.3</span> Step 3: Deflate Nominal Income to Real Income (2010 SGD)</h4>
 <p>Nominal income is divided by the rebased CPI (expressed as a proportion) to obtain real income in constant 2010 dollars.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>income_real <span class="ot">&lt;-</span> income_grouped <span class="sc">%&gt;%</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>income_real <span class="ot">&lt;-</span> income_grouped <span class="sc">%&gt;%</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    cpi <span class="sc">%&gt;%</span> <span class="fu">select</span>(Year, <span class="st">`</span><span class="at">CPI (2010 = 100)</span><span class="st">`</span>),</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"Year"</span></span>
@@ -1672,7 +1674,7 @@ Table&nbsp;5: CPI Rebased to 2010 = 100
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Top 20% (Nominal)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Top 20%</span><span class="st">`</span>,</span>
 <span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Top 20% (Real)</span><span class="st">`</span>)</span>
 <span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(real_income_display, <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(real_income_display, <span class="dv">10</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-real-income" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-real-income-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1804,7 +1806,7 @@ Table&nbsp;6: Real Household Income by Income Group (Constant 2010 SGD)
 <h4 data-number="5.3.4" class="anchored" data-anchor-id="step-4-index-all-series-to-2010-100"><span class="header-section-number">5.3.4</span> Step 4: Index All Series to 2010 = 100</h4>
 <p>Both real income and the HDB Resale Price Index are converted into normalised indices with 2010 as the base year (= 100), enabling direct comparison of growth rates.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>base_vals <span class="ot">&lt;-</span> income_real <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>base_vals <span class="ot">&lt;-</span> income_real <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>income_indexed <span class="ot">&lt;-</span> income_real <span class="sc">%&gt;%</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
@@ -1827,7 +1829,7 @@ Table&nbsp;6: Real Household Income by Income Group (Constant 2010 SGD)
 <span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"Year"</span></span>
 <span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(indexed_summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(indexed_summary)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-indexed" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-indexed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -2052,8 +2054,8 @@ Table&nbsp;7: Indexed Values (2010 = 100) – Real Income and HDB Resale Price I
 Table&nbsp;8
 </figcaption>
 <div aria-describedby="tbl-verification-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Verify 2010 rebasing</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>income_indexed <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Verify 2010 rebasing</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>income_indexed <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 11
    Year `Bottom 20%` `Middle 60%` `Top 20%` `CPI (2010 = 100)`
@@ -2063,28 +2065,28 @@ Table&nbsp;8
 #   `Top 20% (Real)` &lt;dbl&gt;, `Bottom 20% Index` &lt;dbl&gt;, `Middle 60% Index` &lt;dbl&gt;,
 #   `Top 20% Index` &lt;dbl&gt;</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>hdb_indexed <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>hdb_indexed <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 3
    Year HDB_RPI `HDB Index (2010 = 100)`
   &lt;int&gt;   &lt;dbl&gt;                    &lt;dbl&gt;
 1  2010    119.                      100</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Check for missing values</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(<span class="fu">is.na</span>(income_indexed))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Check for missing values</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(<span class="fu">is.na</span>(income_indexed))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] FALSE</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(<span class="fu">is.na</span>(hdb_indexed))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(<span class="fu">is.na</span>(hdb_indexed))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] FALSE</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Confirm row counts</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(income_indexed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Confirm row counts</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(income_indexed)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 26</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(hdb_indexed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(hdb_indexed)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 26</code></pre>
 </div>
@@ -2102,7 +2104,7 @@ Table&nbsp;8
 <h3 data-number="5.5" class="anchored" data-anchor-id="final-tidy-dataset"><span class="header-section-number">5.5</span> Final Tidy Dataset</h3>
 <p>The final dataset is reshaped into long format with variables: Year, Income Group, Measure Type, and Index Value, suitable for faceted line chart visualisation.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>tidy_data <span class="ot">&lt;-</span> income_indexed <span class="sc">%&gt;%</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>tidy_data <span class="ot">&lt;-</span> income_indexed <span class="sc">%&gt;%</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Year, <span class="st">`</span><span class="at">Bottom 20% Index</span><span class="st">`</span>, <span class="st">`</span><span class="at">Middle 60% Index</span><span class="st">`</span>, <span class="st">`</span><span class="at">Top 20% Index</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">c</span>(<span class="st">`</span><span class="at">Bottom 20% Index</span><span class="st">`</span>, <span class="st">`</span><span class="at">Middle 60% Index</span><span class="st">`</span>, <span class="st">`</span><span class="at">Top 20% Index</span><span class="st">`</span>),</span>
@@ -2126,7 +2128,7 @@ Table&nbsp;8
 <span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(</span>
 <span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>  tidy_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2000</span>, <span class="dv">2005</span>, <span class="dv">2010</span>, <span class="dv">2015</span>, <span class="dv">2020</span>, <span class="dv">2025</span>)),</span>
 <span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"Income Group"</span>, <span class="st">"Measure Type"</span>, <span class="st">"Index Value (2010 = 100)"</span>)</span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-tidy" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-tidy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -2374,7 +2376,7 @@ Table&nbsp;9: Final Tidy Dataset (Sample Rows)
 <section id="indexed-comparison-faceted-line-chart" class="level4" data-number="5.6.1">
 <h4 data-number="5.6.1" class="anchored" data-anchor-id="indexed-comparison-faceted-line-chart"><span class="header-section-number">5.6.1</span> Indexed Comparison (Faceted Line Chart)</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>tidy_data <span class="ot">&lt;-</span> tidy_data <span class="sc">%&gt;%</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>tidy_data <span class="ot">&lt;-</span> tidy_data <span class="sc">%&gt;%</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Income_Group =</span> <span class="fu">factor</span>(Income_Group, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Bottom 20%"</span>, <span class="st">"Middle 60%"</span>, <span class="st">"Top 20%"</span>)),</span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Measure_Type =</span> <span class="fu">factor</span>(Measure_Type, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Real Income"</span>, <span class="st">"HDB Resale Price"</span>))</span>
@@ -2401,7 +2403,7 @@ Table&nbsp;9: Final Tidy Dataset (Sample Rows)
 <span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">color =</span> <span class="st">"grey40"</span>),</span>
 <span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
 <span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">8</span>)</span>
-<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-indexed-comparison" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -2415,11 +2417,12 @@ Figure&nbsp;1: Real Household Income vs HDB Resale Price Index (2010 = 100)
 </div>
 </div>
 </div>
+<p>The faceted line chart reveals that prior to 2010, all three income groups had real income indices running broadly in line with or above the HDB resale price index, suggesting relative affordability stability in the early 2000s. Post-2010, the HDB Resale Price Index diverges sharply upward, by 2025, it reaches 171.0 compared to 136.3, 141.2, and 115.3 for Bottom 20%, Middle 60%, and Top 20% real income respectively. Notably, the Top 20% panel shows the widest gap in absolute terms by 2025, which appears counterintuitive but reflects that high-income nominal growth was partly offset by CPI deflation, while resale prices continued to rise. The Bottom 20% panel shows the most concerning trajectory, real income growth has lagged behind HDB price growth since approximately 2021, coinciding with the post-COVID resale market surge.</p>
 </section>
 <section id="affordability-gap-by-income-group" class="level4" data-number="5.6.2">
 <h4 data-number="5.6.2" class="anchored" data-anchor-id="affordability-gap-by-income-group"><span class="header-section-number">5.6.2</span> Affordability Gap by Income Group</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>gap_data <span class="ot">&lt;-</span> tidy_data <span class="sc">%&gt;%</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>gap_data <span class="ot">&lt;-</span> tidy_data <span class="sc">%&gt;%</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> Measure_Type, <span class="at">values_from =</span> Index_Value) <span class="sc">%&gt;%</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Affordability_Gap =</span> <span class="st">`</span><span class="at">HDB Resale Price</span><span class="st">`</span> <span class="sc">-</span> <span class="st">`</span><span class="at">Real Income</span><span class="st">`</span>)</span>
 <span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -2446,7 +2449,7 @@ Figure&nbsp;1: Real Household Income vs HDB Resale Price Index (2010 = 100)
 <span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">13</span>),</span>
 <span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">color =</span> <span class="st">"grey40"</span>),</span>
 <span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-affordability-gap" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -2460,6 +2463,7 @@ Figure&nbsp;2: Housing Affordability Gap by Income Group
 </div>
 </div>
 </div>
+<p>Figure 2 quantifies the affordability gap as the difference between the HDB Resale Price Index and the Real Income Index (both rebased to 2010 = 100). Before 2010, all three income groups show negative or near-zero gaps, meaning income growth was keeping pace with or outpacing housing prices. From 2010 onward, the gap turns persistently positive for all groups. The sharpest deterioration occurs post-2020: by 2025, the Bottom 20% faces a gap of 34.7 index points (171.0 − 136.3), the Middle 60% faces 29.8 points (171.0 − 141.2), while the Top 20% faces the largest gap at 55.7 points (171.0 − 115.3). It is important to note that a larger index gap does not necessarily imply greater financial stress, the Top 20% retain substantially higher absolute incomes and greater access to financing, making this gap an indicator of relative price growth divergence rather than housing distress. The Top 20% result warrants careful interpretation, their real income growth has plateaued since around 2013, suggesting that upper-income households are not immune to affordability pressure, particularly when purchasing larger or more central resale units. The GFC shaded region (2008–2009) shows a temporary compression of gaps as housing prices dipped, while the COVID-19 period (2020–2021) marks the inflection point after which all gaps widen dramatically.</p>
 <p>The resulting dataset contains four primary analytical dimensions:</p>
 <ol type="1">
 <li><p>Year (time dimension),</p></li>
@@ -2473,25 +2477,22 @@ Figure&nbsp;2: Housing Affordability Gap by Income Group
 </section>
 <section id="planned-data-analysis" class="level2" data-number="6">
 <h2 data-number="6" class="anchored" data-anchor-id="planned-data-analysis"><span class="header-section-number">6</span> Planned Data Analysis</h2>
-<p>Descriptive and comparative trend analysis will be conducted to:</p>
-<ul>
-<li>Compare income and housing price growth rates across income groups.</li>
-<li>Identify periods where housing prices outpace income growth.</li>
-<li>Support visual annotations highlighting divergence or convergence trends.</li>
-</ul>
-<p>An affordability gap index (Housing Price Index – Real Income Index) will be computed to quantify divergence across income groups over time.</p>
-<p>Growth differentials will also be compared across income groups to assess whether affordability divergence is widening structurally over time.</p>
+<p>The following analytical methods will be applied to support and extend the visualization findings:</p>
+<p><strong>1. Compound Annual Growth Rate (CAGR) Comparison</strong> CAGR will be computed for real income and HDB resale prices across three sub-periods, 2000–2010 (pre-financial crisis to base year), 2010–2020 (post-GFC expansion), and 2020–2025 (COVID-19 and post-pandemic surge), for each income group. This allows structured identification of periods where housing price growth structurally outpaced income growth, and whether this divergence is accelerating.</p>
+<p><strong>2. Affordability Gap Index</strong> An affordability gap index (HDB Resale Price Index − Real Income Index) will be computed annually for each income group. A positive and widening gap indicates worsening affordability. This metric directly addresses the research question and will be annotated on the final visualization.</p>
+<p><strong>3. Price-to-Income Ratio (Supplementary Metric)</strong> A supplementary price-to-income ratio will be computed as nominal HDB Resale Price Index divided by nominal household income index (not deflated), to provide an alternative affordability lens that is more familiar to general audiences and policymakers. This will be included as a supporting annotation or table alongside the main visualization.</p>
+<p>These methods are intentionally kept within descriptive and comparative analysis, consistent with the module’s scope, while providing sufficient analytical depth to generate meaningful and defensible insights.</p>
 </section>
 <section id="limitations" class="level2" data-number="7">
 <h2 data-number="7" class="anchored" data-anchor-id="limitations"><span class="header-section-number">7</span> Limitations</h2>
-<p>This analysis relies on CPI (All Items) to deflate income, which may not fully capture housing-specific inflation pressures. The HDB resale price index reflects transaction prices but does not account for mortgage interest rates or financing conditions. Household income data represents gross income and does not reflect disposable income after taxes and transfers. Additionally, index rebasing improves comparability of growth rates but obscures absolute level differences across income groups.</p>
+<p>This analysis carries several limitations that affect the interpretation of findings. First, CPI (All Items) is used to deflate nominal income into real terms. Since housing constitutes a proportionally larger share of expenditure for lower-income households, using a general price index likely <em>understates</em> the real cost burden on the Bottom 20%, meaning the affordability gap presented here is conservative, true purchasing power erosion for lower-income groups may be worse than depicted. Second, the HDB Resale Price Index reflects transaction prices but does not incorporate mortgage interest rates or total debt servicing obligations. During periods of rising interest rates (e.g., 2022–2024), actual affordability deteriorated faster than the index alone suggests, as monthly repayments increased even when prices stabilised. Third, household income data captures gross employment income including employer CPF contributions, which are not directly spendable, using gross income <em>overstates</em> the disposable income available for housing payments, introducing an upward bias in income figures. Fourth, index rebasing to 2010 = 100 improves growth rate comparability but obscures absolute level differences: a household earning $1,800 and one earning $19,000 both index to 100 in 2010, which may mask the structural advantages higher-income groups hold in accessing financing, grants, or larger flats.</p>
 </section>
 <section id="planned-work-distribution" class="level2" data-number="8">
 <h2 data-number="8" class="anchored" data-anchor-id="planned-work-distribution"><span class="header-section-number">8</span> Planned Work Distribution</h2>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 40%">
-<col style="width: 59%">
+<col style="width: 50%">
+<col style="width: 50%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -2506,7 +2507,7 @@ Figure&nbsp;2: Housing Affordability Gap by Income Group
 </tr>
 <tr class="even">
 <td>Jeanie Cherie Chua Yue-Ning</td>
-<td>Data collection and cleaning</td>
+<td>Data collection and raw data ingestion</td>
 </tr>
 <tr class="odd">
 <td>Claudia Yue Xin Ying</td>
@@ -2514,11 +2515,11 @@ Figure&nbsp;2: Housing Affordability Gap by Income Group
 </tr>
 <tr class="even">
 <td>Nurul Zahirah Binte Muhamadnoh</td>
-<td>Visualization design and implementation</td>
+<td>Visualization design and preliminary charts</td>
 </tr>
 <tr class="odd">
 <td>Anushka Chourasia</td>
-<td>Data validation and analysis support</td>
+<td>Data validation, quality checks, and analysis support</td>
 </tr>
 </tbody>
 </table>
@@ -2535,8 +2536,9 @@ Figure&nbsp;2: Housing Affordability Gap by Income Group
 </figure>
 </div>
 <p>This design separates income groups (Bottom 20%, Middle 60%, Top 20%) into individual panels with consistent y-axis scales.</p>
-<p>Why considered: - Reduces visual clutter. - Eliminates dual-axis distortion. - Makes within-group divergence clear.</p>
-<p>Why not selected as primary design: - Requires more vertical space. - Cross-group comparison less immediate.</p>
+<p>Why considered: - Reduces visual clutter - Eliminates dual-axis distortion - Makes within-group divergence clear</p>
+<p>Why not selected as primary design: - Requires more vertical space - Cross-group comparison less immediate</p>
+<p><em>Note: The preliminary visualization in Section 5.6 adopts a faceted layout structurally similar to Concept A. This was done intentionally for exploratory purposes, the faceted approach serves as the data engineering preview, while the final improved visualization will integrate the indexed comparison approach from Concept C with design refinements not possible at the proposal stage.</em></p>
 </section>
 <section id="concept-b-incomehousing-gap-area-chart" class="level3" data-number="9.2">
 <h3 data-number="9.2" class="anchored" data-anchor-id="concept-b-incomehousing-gap-area-chart"><span class="header-section-number">9.2</span> Concept B: Income–Housing Gap Area Chart</h3>
@@ -2547,8 +2549,8 @@ Figure&nbsp;2: Housing Affordability Gap by Income Group
 </figure>
 </div>
 <p>This design shades the difference between real income index and housing price index to highlight affordability gaps.</p>
-<p>Why considered: - Visually emphasises divergence. - Intuitive for non-technical audiences.</p>
-<p>Why not selected: - Area shading may exaggerate perceived magnitude. - Less academically neutral in tone.</p>
+<p>Why considered: - Visually emphasises divergence - Intuitive for non-technical audiences</p>
+<p>Why not selected: - Area shading may exaggerate perceived magnitude - Less academically neutral in tone</p>
 </section>
 <section id="concept-c-indexed-comparison-base-year-2010-100" class="level3" data-number="9.3">
 <h3 data-number="9.3" class="anchored" data-anchor-id="concept-c-indexed-comparison-base-year-2010-100"><span class="header-section-number">9.3</span> Concept C: Indexed Comparison (Base Year = 2010 = 100)</h3>
@@ -2559,7 +2561,7 @@ Figure&nbsp;2: Housing Affordability Gap by Income Group
 </figure>
 </div>
 <p>Indexed comparison removes nominal scale distortion and eliminates the dual-axis bias present in the original design. By converting income and housing series into normalised indices rebased to 2010 = 100, all variables share a common baseline, enabling direct growth comparison without perceptual manipulation.</p>
-<p>Why preferred: - Standard economic practice. - Removes scale distortion. - Clean and professional. - Supports analytical interpretation.</p>
+<p>Why preferred: - Standard economic practice - Removes scale distortion - Clean and professional - Supports analytical interpretation</p>
 </section>
 </section>
 
@@ -2616,13 +2618,14 @@ Figure&nbsp;2: Housing Affordability Gap by Income Group
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
