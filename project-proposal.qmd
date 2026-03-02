@@ -154,7 +154,7 @@ years <- as.character(2025:2000)
 # Then rename columns
 colnames(income_raw_wide) <- c("Decile", years, "drop")
 income_raw_wide <- income_raw_wide %>% select(-drop)
-
+income_raw_wide <- income_raw_wide[-1, ]
 kable(head(income_raw_wide[, 1:10], 6))
 # Assign column names: first col = Decile label, then years 2025 down to 2000, then trailing comma col
 years <- as.character(2025:2000)
