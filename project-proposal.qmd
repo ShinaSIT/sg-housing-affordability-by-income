@@ -9,11 +9,12 @@ author:
 date: "2026-03-02"
 format:
   html:
+    theme: cosmo
     embed-resources: true
     toc: true
     toc-depth: 3
     number-sections: true
-    theme: cosmo
+    code-fold: true
 execute:
   echo: true
   warning: false
