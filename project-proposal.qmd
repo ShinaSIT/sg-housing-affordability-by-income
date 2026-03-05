@@ -1,5 +1,6 @@
 ---
 title: "Project Proposal – Income vs Prices (Singapore, 2000–2025)"
+
 author:
   - name: Shina Shih Xin Rong (2402781)
   - name: Jeanie Cherie Chua Yue-Ning (2403083)
@@ -9,12 +10,11 @@ author:
 date: "2026-03-05"
 format:
   html:
-    theme: cosmo
     embed-resources: true
     toc: true
     toc-depth: 3
     number-sections: true
-    code-fold: true
+    theme: cosmo
 execute:
   echo: true
   warning: false
