@@ -1,12 +1,13 @@
 ---
 title: "Project Proposal – Income vs Prices (Singapore, 2000–2025)"
+
 author:
   - name: Shina Shih Xin Rong (2402781)
   - name: Jeanie Cherie Chua Yue-Ning (2403083)
   - name: Claudia Yue Xin Ying (2401817)
   - name: Nurul Zahirah Binte Muhamadnoh (2401671)
   - name: Anushka Chourasia (2503769)
-date: "2026-03-02"
+date: "2026-03-05"
 format:
   html:
     embed-resources: true
@@ -154,7 +155,7 @@ years <- as.character(2025:2000)
 # Then rename columns
 colnames(income_raw_wide) <- c("Decile", years, "drop")
 income_raw_wide <- income_raw_wide %>% select(-drop)
-
+income_raw_wide <- income_raw_wide[-1, ]
 kable(head(income_raw_wide[, 1:10], 6))
 # Assign column names: first col = Decile label, then years 2025 down to 2000, then trailing comma col
 years <- as.character(2025:2000)
