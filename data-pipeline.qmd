@@ -1,0 +1,214 @@
+---
+title: "Data Pipeline – SG Housing Affordability vs Income"
+format: html
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Libraries
+```{r}
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(stringr)
+library(purrr)
+library(readxl)
+library(knitr)
+
+data_path <- "Part 2/Data/"
+dp <- function(f) paste0(data_path, f)
+```
+
+## Raw Data Ingestion
+
+### Household Income by Decile
+```{r}
+income_raw <- read_excel(
+  dp("Household Income by Income Decile.xlsx"),
+  sheet = 1, skip = 10, n_max = 12
+)
+
+colnames(income_raw)[1] <- "Decile"
+income_raw <- income_raw %>% select(where(~ !all(is.na(.))))
+
+income_long <- income_raw %>%
+  filter(!str_detect(Decile, "Total|Deciles"), !is.na(Decile)) %>%
+  mutate(Decile = str_trim(Decile)) %>%
+  pivot_longer(cols = -Decile, names_to = "Year", values_to = "Income_Nominal") %>%
+  mutate(
+    Year = as.integer(Year),
+    Income_Nominal = as.numeric(Income_Nominal)
+  ) %>%
+  filter(Year >= 2000, Year <= 2025, !is.na(Income_Nominal))
+
+kable(head(income_long, 10))
+```
+
+### CPI by Household Income Group (Annual, Group-Specific)
+```{r}
+load_cpi_annual <- function(filepath, group_label) {
+  raw <- read_excel(filepath, sheet = 1, skip = 10, n_max = 2)
+  colnames(raw)[1] <- "Series"
+  
+  raw %>%
+    filter(str_trim(Series) == "All Items") %>%
+    pivot_longer(cols = -Series, names_to = "Year", values_to = "CPI") %>%
+    mutate(
+      Year = as.integer(str_trim(Year)),
+      CPI  = as.numeric(CPI),
+      Group = group_label
+    ) %>%
+    filter(!is.na(Year), !is.na(CPI), Year >= 2000, Year <= 2025) %>%
+    select(Group, Year, CPI)
+}
+
+cpi_bottom <- load_cpi_annual(
+  dp("CPI By Household Income Group (Lowest 20%) Annual.xlsx"), "Bottom 20%")
+cpi_middle <- load_cpi_annual(
+  dp("CPI By Household Income Group (Middle 60%) Annual.xlsx"), "Middle 60%")
+cpi_top    <- load_cpi_annual(
+  dp("CPI By Household Income Group (Top 20%) Annual.xlsx"),    "Top 20%")
+
+cpi_grouped <- bind_rows(cpi_bottom, cpi_middle, cpi_top)
+
+kable(cpi_grouped %>% filter(Year %in% c(2000, 2005, 2010, 2015, 2020, 2025)))
+```
+
+### HDB Resale Transaction Data
+```{r}
+hdb_files <- c(
+  dp("ResaleFlatPricesBasedonApprovalDate2000Feb2012.csv"),
+  dp("ResaleFlatPricesBasedonRegistrationDateFromMar2012toDec2014.csv"),
+  dp("ResaleFlatPricesBasedonRegistrationDateFromJan2015toDec2016.csv"),
+  dp("ResaleflatpricesbasedonregistrationdatefromJan2017onwards.csv")
+)
+
+hdb_raw <- map_dfr(hdb_files, function(f) {
+  read_csv(f, show_col_types = FALSE, col_types = cols(.default = col_character())) %>%
+    select(month, resale_price)
+})
+kable(head(hdb_raw, 5))
+```
+
+## Data Cleaning and Standardisation
+```{r}
+# Aggregate deciles into 3 income groups
+income_grouped <- income_long %>%
+  mutate(
+    Group = case_when(
+      Decile %in% c("1st (Lowest)", "2nd")                     ~ "Bottom 20%",
+      Decile %in% c("3rd", "4th", "5th", "6th", "7th", "8th") ~ "Middle 60%",
+      Decile %in% c("9th", "10th (Highest)")                   ~ "Top 20%"
+    )
+  ) %>%
+  filter(!is.na(Group)) %>%
+  group_by(Group, Year) %>%
+  summarise(Income_Nominal = mean(Income_Nominal, na.rm = TRUE), .groups = "drop")
+
+# Compute annual median HDB resale price
+hdb_annual <- hdb_raw %>%
+  mutate(
+    Year = as.integer(str_extract(month, "\\d{4}")),
+    resale_price = as.numeric(resale_price)
+  ) %>%
+  filter(Year >= 2000, Year <= 2025) %>%
+  group_by(Year) %>%
+  summarise(HDB_Median_Price = median(resale_price, na.rm = TRUE), .groups = "drop")
+
+kable(hdb_annual)
+```
+
+## Data Transformation and Aggregation
+
+### Step 1: Deflate Nominal Income → Real Income (2024 base)
+```{r}
+income_real <- income_grouped %>%
+  left_join(cpi_grouped, by = c("Group", "Year")) %>%
+  mutate(Income_Real = Income_Nominal / (CPI / 100))
+
+kable(head(income_real, 10))
+```
+
+### Step 2: Rebase All Series to 2010 = 100
+```{r}
+# Get 2010 base values for each group
+base_income <- income_real %>%
+  filter(Year == 2010) %>%
+  select(Group, Base_Real = Income_Real)
+
+base_hdb <- hdb_annual %>%
+  filter(Year == 2010) %>%
+  pull(HDB_Median_Price)
+
+# Index real income
+income_indexed <- income_real %>%
+  left_join(base_income, by = "Group") %>%
+  mutate(Income_Index = round(Income_Real / Base_Real * 100, 1)) %>%
+  select(Year, Group, Income_Nominal, CPI, Income_Real, Income_Index)
+
+# Index HDB prices
+hdb_indexed <- hdb_annual %>%
+  mutate(HDB_Index = round(HDB_Median_Price / base_hdb * 100, 1))
+
+kable(income_indexed %>% filter(Year %in% c(2000, 2005, 2010, 2015, 2020, 2025)))
+kable(hdb_indexed %>% filter(Year %in% c(2000, 2005, 2010, 2015, 2020, 2025)))
+```
+
+## Data Validation and Quality Checks
+```{r}
+# Check 2010 = 100 for all groups
+cat("Income index at 2010:\n")
+print(income_indexed %>% filter(Year == 2010) %>% select(Group, Income_Index))
+
+cat("\nHDB index at 2010:\n")
+print(hdb_indexed %>% filter(Year == 2010) %>% select(Year, HDB_Index))
+
+# Check for missing values
+cat("\nMissing values in income_indexed:", any(is.na(income_indexed)), "\n")
+cat("Missing values in hdb_indexed:", any(is.na(hdb_indexed)), "\n")
+
+# Check row counts
+cat("Income rows:", nrow(income_indexed), "(expected 78 = 26 years × 3 groups)\n")
+cat("HDB rows:", nrow(hdb_indexed), "(expected 26)\n")
+```
+
+## Final Tidy Dataset
+```{r}
+# Income in long format
+income_long_final <- income_indexed %>%
+  select(Year, Income_Group = Group, Index_Value = Income_Index) %>%
+  mutate(Measure_Type = "Real Income")
+
+# HDB replicated for each income group
+hdb_long_final <- hdb_indexed %>%
+  select(Year, Index_Value = HDB_Index) %>%
+  crossing(Income_Group = c("Bottom 20%", "Middle 60%", "Top 20%")) %>%
+  mutate(Measure_Type = "HDB Resale Price")
+
+# Combine
+tidy_data <- bind_rows(income_long_final, hdb_long_final) %>%
+  mutate(
+    Income_Group = factor(Income_Group,
+                          levels = c("Bottom 20%", "Middle 60%", "Top 20%")),
+    Measure_Type = factor(Measure_Type,
+                          levels = c("Real Income", "HDB Resale Price"))
+  ) %>%
+  select(Year, Income_Group, Measure_Type, Index_Value) %>%
+  arrange(Year, Income_Group, Measure_Type)
+
+kable(
+  tidy_data %>% filter(Year %in% c(2000, 2010, 2020, 2025)),
+  col.names = c("Year", "Income Group", "Measure Type", "Index (2010 = 100)")
+)
+```
+
+## Save Clean Dataset
+```{r}
+saveRDS(tidy_data, "tidy_data.rds")
+cat("tidy_data.rds saved successfully.\n")
+cat("Rows:", nrow(tidy_data), "\n")
+cat("Columns:", ncol(tidy_data), "\n")
+```
