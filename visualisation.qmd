@@ -1,323 +1,275 @@
 ---
-title: "Visualisation – SG Housing Affordability vs Income"
-subtitle: "Did real income growth keep pace with housing price growth, 2000–2025?"
+title: "Real Income vs Housing Prices in Singapore"
+subtitle: "Did income growth keep pace with HDB resale prices, 2000–2025?"
 author:
   - name: Shina Shih Xin Rong (2402781)
   - name: Jeanie Cherie Chua Yue-Ning (2403083)
   - name: Claudia Yue Xin Ying (2401817)
   - name: Nurul Zahirah Binte Muhamadnoh (2401671)
   - name: Anushka Chourasia (2503769)
-date: "2026-03-05"
+date: "2026-03-22"
 format:
   html:
     embed-resources: true
     toc: true
     toc-depth: 2
-    number-sections: true
+    number-sections: false
     theme: cosmo
+    css: styles.css
 execute:
   echo: false
   warning: false
   message: false
 ---
-
-```{r}
-#| label: setup
-
+```{r setup}
 library(tidyverse)
 library(knitr)
 library(scales)
 
-# Load the clean dataset produced by data-pipeline.qmd
 tidy_data <- readRDS("tidy_data.rds")
 
-# Derive gap dataset used by Charts 2 and 3
 gap_data <- tidy_data %>%
   pivot_wider(names_from = Measure_Type, values_from = Index_Value) %>%
   mutate(Affordability_Gap = `HDB Resale Price` - `Real Income`)
 
-# Shared colour palettes
-col_measure  <- c("Real Income" = "#2166AC", "HDB Resale Price" = "#B2182B")
-col_group    <- c("Bottom 20%" = "#D73027", "Middle 60%" = "#FC8D59", "Top 20%" = "#4575B4")
+col_measure <- c("Real Income" = "#2166AC", "HDB Resale Price" = "#B2182B")
+col_group   <- c("Bottom 20%" = "#D73027", "Middle 60%" = "#FC8D59", "Top 20%" = "#4575B4")
 
-# Shared annotation helpers
-gfc_rect   <- annotate("rect", xmin = 2008, xmax = 2009,
-                        ymin = -Inf, ymax = Inf, alpha = 0.08, fill = "grey30")
-covid_rect <- annotate("rect", xmin = 2020, xmax = 2021,
-                        ymin = -Inf, ymax = Inf, alpha = 0.08, fill = "grey30")
-
-shared_theme <- theme_minimal(base_size = 11) +
+base_theme <- theme_minimal(base_size = 12) +
   theme(
-    plot.title    = element_text(face = "bold", size = 13),
-    plot.subtitle = element_text(size = 10, color = "grey40"),
-    plot.caption  = element_text(size = 8,  color = "grey50"),
+    plot.title       = element_text(face = "bold", size = 14, margin = margin(b = 6)),
+    plot.subtitle    = element_text(size = 10, color = "grey40", margin = margin(b = 12)),
+    plot.caption     = element_text(size = 8, color = "grey55", hjust = 0,
+                                    margin = margin(t = 10)),
+    plot.background  = element_rect(fill = "#FAFAFA", color = NA),
+    panel.background = element_rect(fill = "#FAFAFA", color = NA),
     panel.grid.minor = element_blank(),
-    legend.position  = "bottom"
+    panel.grid.major = element_line(color = "grey90"),
+    legend.position  = "bottom",
+    legend.key.width = unit(1.5, "cm"),
+    strip.text       = element_text(face = "bold", size = 12, margin = margin(b = 6)),
+    axis.text        = element_text(color = "grey30"),
+    axis.text.x      = element_text(angle = 45, hjust = 1, size = 9)
   )
 ```
 
-## Chart 1 – Faceted indexed comparison {#sec-chart1}
-
-*Real income vs HDB resale price growth, by income group*
-
-```{r}
-#| label: fig-faceted-indexed
-#| fig-cap: "Real household income vs HDB resale price index (2010 = 100). Each panel shows one income group; the HDB resale price line (red) is identical across panels, making cross-group divergence directly comparable."
-#| fig-width: 12
-#| fig-height: 5
-
-# Compute 2025 endpoint labels for annotation
+## The Improved Visualization
+```{r main-chart, fig.width=13, fig.height=6}
 labels_2025 <- tidy_data %>%
   filter(Year == 2025) %>%
   mutate(label = paste0(round(Index_Value, 0)))
 
-ggplot(tidy_data, aes(x = Year, y = Index_Value, color = Measure_Type)) +
-  # Shaded ribbon between the two lines (gap emphasis)
+events <- tibble(
+  xmin  = c(2008, 2020),
+  xmax  = c(2009, 2021),
+  label = c("GFC", "COVID-19")
+)
+
+p <- ggplot(tidy_data,
+            aes(x = Year, y = Index_Value, color = Measure_Type,
+                linetype = Measure_Type)) +
+
+  # Shaded gap ribbon
   geom_ribbon(
     data = gap_data,
     aes(x = Year, ymin = `Real Income`, ymax = `HDB Resale Price`),
     inherit.aes = FALSE,
-    fill = "#B2182B", alpha = 0.08
+    fill = "#B2182B", alpha = 0.07
   ) +
-  gfc_rect +
-  covid_rect +
-  annotate("text", x = 2008.5, y = 145, label = "GFC",      size = 2.5, color = "grey40", angle = 90) +
-  annotate("text", x = 2020.5, y = 145, label = "COVID-19", size = 2.5, color = "grey40", angle = 90) +
-  geom_hline(yintercept = 100, linetype = "dashed", color = "grey60", linewidth = 0.4) +
-  geom_line(linewidth = 1) +
+
+  # Event shading
+  geom_rect(data = events,
+            aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
+            inherit.aes = FALSE,
+            fill = "grey50", alpha = 0.10) +
+
+  # Event labels — inside grey band, rotated, at bottom
+  geom_text(data = events,
+          aes(x = (xmin + xmax) / 2, y = 58, label = label),
+          inherit.aes = FALSE,
+          size = 2.5, color = "grey35", fontface = "italic",
+          angle = 90) +
+
+  # Base year reference line
+  geom_hline(yintercept = 100, linetype = "dashed",
+             color = "grey55", linewidth = 0.45) +
+
+  # Main lines
+  geom_line(linewidth = 1.1) +
+  geom_point(data = tidy_data %>% filter(Year %% 5 == 0),
+             size = 2.2, shape = 21, fill = "white", stroke = 1.1) +
+
   # 2025 endpoint labels
   geom_text(
     data = labels_2025,
     aes(label = label),
-    hjust = -0.15, size = 3, fontface = "bold",
+    hjust = -0.2, size = 3.2, fontface = "bold",
     show.legend = FALSE
   ) +
+
   facet_wrap(~Income_Group, ncol = 3) +
+
   scale_color_manual(values = col_measure, name = NULL) +
-  scale_x_continuous(breaks = seq(2000, 2025, by = 5), expand = expansion(mult = c(0, 0.12))) +
-  scale_y_continuous(breaks = seq(60, 180, by = 20)) +
-  labs(
-    title    = "Real household income vs HDB resale price index (2010 = 100)",
-    subtitle = "Singapore, 2000–2025  |  Income deflated by group-specific CPI  |  Shaded band = affordability gap",
-    x = NULL, y = "Index (2010 = 100)",
-    caption  = "Sources: SingStat (household income, CPI by income group), HDB (resale transaction prices)"
+  scale_linetype_manual(values = c("Real Income" = "solid",
+                                   "HDB Resale Price" = "solid"),
+                        name = NULL) +
+  scale_x_continuous(breaks = seq(2000, 2025, by = 5),
+                     expand = expansion(mult = c(0.02, 0.14))) +
+  scale_y_continuous(
+    breaks = seq(60, 180, by = 20),
+    limits = c(55, 185),
+    sec.axis = sec_axis(
+      ~ .,
+      breaks = 100,
+      labels = "← base year (2010 = 100)"
+    )
   ) +
-  shared_theme +
+
+  labs(
+    title    = "Real Household Income vs HDB Resale Price Index (2010 = 100)",
+    subtitle = paste0(
+      "Singapore, 2000–2025  |  Income deflated by group-specific CPI  |  ",
+      "Shaded band = affordability gap  |  Labels show 2025 index values"
+    ),
+    x       = NULL,
+    y       = "Index value (2010 = 100)",
+    caption = paste0(
+      "Sources: Department of Statistics Singapore — Average Monthly Household Employment Income by Decile; ",
+      "CPI by Household Income Group (2024 base year).\n",
+      "Housing & Development Board / data.gov.sg — HDB Resale Flat Prices (transaction records, 2000–2025).\n",
+      "Note: Income groups deflated using their respective group-specific CPI. ",
+      "HDB index computed as annual median resale price, rebased to 2010 = 100."
+    )
+  ) +
+
+  base_theme +
   theme(
-    strip.text   = element_text(face = "bold", size = 11),
-    axis.text.x  = element_text(angle = 45, hjust = 1, size = 8)
+    legend.text      = element_text(size = 11),
+    legend.spacing.x = unit(0.4, "cm"),
+    # Style the secondary axis label
+    axis.text.y.right = element_text(size = 8, color = "grey50",
+                                     face = "italic", hjust = 0),
+    axis.ticks.y.right = element_line(color = "grey55")
   )
+
+p
 ```
 
-Prior to 2010, real income across all three groups broadly tracked or outpaced HDB resale price growth, indicating relative affordability stability. From 2010 onward, resale prices diverge upward. The gap accelerates sharply after 2020, coinciding with the post-COVID resale surge. By 2025, the HDB index reaches its highest recorded level while real income growth plateaus for all groups — most visibly for the Bottom 20%.
+**Reading the chart.** Each panel shows one income group. The blue line tracks real (inflation-adjusted) household income; the red line tracks HDB resale prices. Both are indexed to 2010 = 100, so the lines share a common baseline — any divergence directly reflects a change in relative affordability. The shaded band between the lines is the affordability gap: when red rises above blue, housing is outpacing income.
 
 ---
 
-## Chart 2 – Affordability gap over time {#sec-chart2}
+## Key Insights
 
-*How far housing price growth has outpaced real income growth, per group*
+**Before 2010**, real income broadly kept pace with or exceeded HDB resale prices across all three income groups, reflecting relative affordability stability in the early 2000s.
 
-```{r}
-#| label: fig-affordability-gap
-#| fig-cap: "Affordability gap = HDB resale price index minus real income index (2010 = 100). Positive values indicate housing prices growing faster than income. Annotated 2025 gap values are shown at the right margin."
-#| fig-width: 10
-#| fig-height: 5.5
+**From 2010 onward**, resale prices diverge upward. The gap widens progressively, then accelerates sharply after 2020 — coinciding with the post-COVID resale surge driven by demand brought forward from the pandemic period.
 
-# 2025 endpoint labels for gap chart
+**By 2025**, the HDB index reaches 171.6 — its highest level in the 25-year window — while real income indices are 140.5 (Bottom 20%), 141.8 (Middle 60%), and 113.8 (Top 20%). The affordability gap is largest in absolute index-point terms for the Top 20% (57.8 points), but this reflects real income plateauing under CPI deflation rather than greater financial stress. **The Bottom 20% gap (31.1 points) is the most policy-relevant**: their lower absolute income provides far less buffer against rising prices, and their real income growth in 2020–2025 is the weakest of all three groups.
+
+---
+
+## Supporting Analysis
+
+::: {.callout-note collapse="true"}
+### Affordability gap over time
+```{r gap-chart, fig.width=10, fig.height=5.5}
 gap_labels_2025 <- gap_data %>%
   filter(Year == 2025) %>%
-  mutate(label = paste0(Income_Group, ": ", round(Affordability_Gap, 1), " pts"))
+  mutate(
+    label = paste0(Income_Group, ": +", round(Affordability_Gap, 1), " pts"),
+    # Stagger y positions to avoid overlapping
+    y_pos = case_when(
+      Income_Group == "Top 20%"    ~ 59,
+      Income_Group == "Bottom 20%" ~ 32,
+      Income_Group == "Middle 60%" ~ 26
+    )
+  )
 
 ggplot(gap_data, aes(x = Year, y = Affordability_Gap, color = Income_Group)) +
-  gfc_rect +
-  covid_rect +
-  annotate("text", x = 2008.5, y = 68, label = "GFC",      size = 2.5, color = "grey40", angle = 90) +
-  annotate("text", x = 2020.5, y = 68, label = "COVID-19", size = 2.5, color = "grey40", angle = 90) +
+  geom_rect(data = events,
+            aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
+            inherit.aes = FALSE, fill = "grey50", alpha = 0.10) +
+  # Event labels at bottom, rotated — same as main chart
+  geom_text(data = events,
+          aes(x = (xmin + xmax) / 2, y = -39, label = label),
+          inherit.aes = FALSE,
+          size = 2.5, color = "grey35", fontface = "italic",
+          angle = 90) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey50", linewidth = 0.5) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 1.5) +
-  # Endpoint labels
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 1.8) +
+  # Staggered endpoint labels
   geom_text(
     data = gap_labels_2025,
-    aes(label = label),
-    hjust = -0.05, size = 3, fontface = "bold",
+    aes(y = y_pos, label = label),
+    x = 2026, hjust = 0, size = 3, fontface = "bold",
     show.legend = FALSE
   ) +
   scale_color_manual(values = col_group, name = NULL) +
-  scale_x_continuous(breaks = seq(2000, 2025, by = 5), expand = expansion(mult = c(0, 0.25))) +
-  scale_y_continuous(breaks = seq(-20, 80, by = 20)) +
-  labs(
-    title    = "Housing affordability gap by income group (2010 = 100)",
-    subtitle = "Gap = HDB resale price index − real income index  |  Positive = housing outpacing income",
-    x = NULL, y = "Affordability gap (index points)",
-    caption  = "Sources: SingStat (household income, CPI by income group), HDB (resale transaction prices)"
+  scale_x_continuous(
+    breaks = seq(2000, 2025, by = 5),
+    limits = c(1999, 2033),
+    expand = expansion(mult = c(0, 0))
   ) +
-  shared_theme
+  scale_y_continuous(
+    breaks = seq(-40, 80, by = 20),
+    limits = c(-42, 85)
+  ) +
+  labs(title    = "Affordability gap by income group",
+       subtitle = "Gap = HDB index − Real income index  |  Positive = housing outpacing income",
+       x = NULL, y = "Gap (index points)",
+       caption  = "Sources: SingStat, HDB / data.gov.sg") +
+  base_theme
 ```
+:::
 
-Before 2010, all three groups show near-zero or negative gaps — income was keeping pace with prices. From 2010, gaps turn persistently positive. The steepest widening occurs post-2020. By 2025, the Top 20% shows the largest index-point gap (driven by real income plateauing under CPI deflation), but this does not imply greater financial stress — higher absolute incomes and better financing access buffer that group. The Bottom 20% gap is the most policy-relevant, as lower absolute incomes leave less buffer against rising prices.
+::: {.callout-note collapse="true"}
+### CAGR by sub-period
+```{r cagr-chart, fig.width=11, fig.height=5}
+cagr_fn <- function(end_val, start_val, n) round(((end_val/start_val)^(1/n) - 1)*100, 2)
 
----
-
-## Chart 3 – CAGR comparison across sub-periods {#sec-chart3}
-
-*Where did growth occur, and which sub-period was most damaging for affordability?*
-
-```{r}
-#| label: fig-cagr
-#| fig-cap: "Compound annual growth rate (CAGR) of real income and HDB resale prices across three sub-periods. Bars above the dashed zero line indicate positive growth; the gap between the HDB bar and the income bar in each period reflects the direction of affordability change."
-#| fig-width: 11
-#| fig-height: 5.5
-
-# Helper: CAGR between two years
-cagr <- function(end_val, start_val, n_years) {
-  round((end_val / start_val)^(1 / n_years) - 1, 4) * 100
-}
-
-# Income CAGRs per group and sub-period
-periods <- list(
-  c(2000, 2010),
-  c(2010, 2020),
-  c(2020, 2025)
-)
+periods <- list(c(2000,2010), c(2010,2020), c(2020,2025))
 
 income_cagr <- map_dfr(periods, function(p) {
-  vals <- tidy_data %>%
+  tidy_data %>%
     filter(Measure_Type == "Real Income", Year %in% p) %>%
-    pivot_wider(names_from = Year, values_from = Index_Value)
-
-  vals %>%
-    mutate(
-      CAGR        = cagr(.[[4]], .[[3]], p[2] - p[1]),
-      Sub_Period  = paste0(p[1], "–", p[2]),
-      Measure     = "Real Income"
-    ) %>%
+    pivot_wider(names_from = Year, values_from = Index_Value) %>%
+    mutate(CAGR = cagr_fn(.[[4]], .[[3]], p[2]-p[1]),
+           Sub_Period = paste0(p[1],"–",p[2]),
+           Measure = "Real Income") %>%
     select(Income_Group, Sub_Period, Measure, CAGR)
 })
 
-# HDB CAGR per sub-period (same for all groups — replicate for faceting)
 hdb_cagr <- map_dfr(periods, function(p) {
   vals <- tidy_data %>%
     filter(Measure_Type == "HDB Resale Price", Year %in% p) %>%
     distinct(Year, Index_Value) %>%
     pivot_wider(names_from = Year, values_from = Index_Value)
-
-  tibble(
-    CAGR       = cagr(vals[[2]], vals[[1]], p[2] - p[1]),
-    Sub_Period = paste0(p[1], "–", p[2]),
-    Measure    = "HDB Resale Price"
-  )
-}) %>%
-  crossing(Income_Group = c("Bottom 20%", "Middle 60%", "Top 20%"))
+  tibble(CAGR = cagr_fn(vals[[2]], vals[[1]], p[2]-p[1]),
+         Sub_Period = paste0(p[1],"–",p[2]),
+         Measure = "HDB Resale Price")
+}) %>% crossing(Income_Group = c("Bottom 20%","Middle 60%","Top 20%"))
 
 cagr_data <- bind_rows(income_cagr, hdb_cagr) %>%
-  mutate(
-    Income_Group = factor(Income_Group, levels = c("Bottom 20%", "Middle 60%", "Top 20%")),
-    Sub_Period   = factor(Sub_Period,   levels = c("2000–2010", "2010–2020", "2020–2025")),
-    Measure      = factor(Measure,      levels = c("Real Income", "HDB Resale Price"))
-  )
+  mutate(Income_Group = factor(Income_Group, levels = c("Bottom 20%","Middle 60%","Top 20%")),
+         Sub_Period   = factor(Sub_Period, levels = c("2000–2010","2010–2020","2020–2025")),
+         Measure      = factor(Measure, levels = c("Real Income","HDB Resale Price")))
 
 ggplot(cagr_data, aes(x = Sub_Period, y = CAGR, fill = Measure)) +
-  geom_col(position = position_dodge(width = 0.65), width = 0.55) +
+  geom_col(position = position_dodge(0.65), width = 0.55) +
   geom_hline(yintercept = 0, linewidth = 0.4, color = "grey40") +
-  geom_text(
-    aes(label = paste0(round(CAGR, 1), "%"),
-        vjust = ifelse(CAGR >= 0, -0.4, 1.3)),
-    position = position_dodge(width = 0.65),
-    size = 2.8, fontface = "bold"
-  ) +
+  geom_text(aes(label = paste0(round(CAGR,1),"%"),
+                vjust = ifelse(CAGR >= 0, -0.4, 1.3)),
+            position = position_dodge(0.65), size = 2.8, fontface = "bold") +
   facet_wrap(~Income_Group, ncol = 3) +
   scale_fill_manual(values = col_measure, name = NULL) +
-  scale_y_continuous(labels = function(x) paste0(x, "%"),
+  scale_y_continuous(labels = function(x) paste0(x,"%"),
                      breaks = seq(-2, 10, by = 2)) +
-  labs(
-    title    = "CAGR of real income vs HDB resale prices by sub-period (2010 = 100 base)",
-    subtitle = "Singapore  |  Three periods: pre-GFC baseline, post-GFC expansion, COVID and post-pandemic surge",
-    x = NULL, y = "CAGR (%)",
-    caption  = "Sources: SingStat (household income, CPI by income group), HDB (resale transaction prices)"
-  ) +
-  shared_theme +
-  theme(
-    strip.text  = element_text(face = "bold", size = 11),
-    axis.text.x = element_text(size = 9)
-  )
+  labs(title    = "CAGR of real income vs HDB resale prices by sub-period",
+       subtitle = "Three periods: 2000–2010, 2010–2020, 2020–2025",
+       x = NULL, y = "CAGR (%)",
+       caption  = "Sources: SingStat, HDB / data.gov.sg") +
+  base_theme + theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
 ```
-
-The 2000–2010 period shows income and housing growing at broadly comparable rates across all groups. The 2010–2020 period reveals a first divergence — HDB prices accelerate while income growth slows, particularly for the Bottom 20%. The 2020–2025 period is the most damaging: HDB resale price growth surges to its highest CAGR across all three sub-periods while real income growth falls sharply — in the Bottom 20%, real income CAGR turns near-zero or negative, directly explaining the widening gap seen in Charts 1 and 2.
-
----
-
-## Chart 4 – Affordability gap heatmap {#sec-chart4}
-
-*Year × income group, with fill colour encoding gap magnitude*
-
-```{r}
-#| label: fig-gap-heatmap
-#| fig-cap: "Affordability gap heatmap (HDB resale price index − real income index, 2010 = 100). Blue cells indicate years where real income growth outpaced housing prices; red cells indicate the reverse. Cell labels show the gap value in index points."
-#| fig-width: 10
-#| fig-height: 3.2
-
-# Use all years for full annual resolution
-heatmap_data <- gap_data %>%
-  mutate(
-    Gap_Label = round(Affordability_Gap, 1),
-    # Clamp label printing to avoid clutter — show every year but only label every 5
-    Label_Text = if_else(Year %% 5 == 0 | Year == max(Year), as.character(Gap_Label), "")
-  )
-
-# Diverging palette: blue (income led) → white (parity) → red (housing led)
-# Centred at 0; limits set to cover approx -25 to +60 range in the data
-ggplot(heatmap_data, aes(x = Year, y = Income_Group, fill = Affordability_Gap)) +
-  geom_tile(colour = "white", linewidth = 0.6) +
-  geom_text(
-    aes(label = Label_Text),
-    size = 2.8, fontface = "bold",
-    colour = if_else(abs(heatmap_data$Affordability_Gap) > 30, "white", "grey20")
-  ) +
-  # Diverging fill: RdBu reversed so blue = negative (income ahead), red = positive (housing ahead)
-  scale_fill_distiller(
-    palette  = "RdBu",
-    direction = 1,           # positive = red, negative = blue
-    limits   = c(-25, 60),
-    oob      = scales::squish,
-    name     = "Gap\n(index pts)",
-    breaks   = c(-20, -10, 0, 10, 20, 40, 60),
-    labels   = function(x) ifelse(x > 0, paste0("+", x), as.character(x))
-  ) +
-  scale_x_continuous(
-    breaks = seq(2000, 2025, by = 5),
-    expand = expansion(0)
-  ) +
-  scale_y_discrete(limits = rev(c("Bottom 20%", "Middle 60%", "Top 20%"))) +
-  # Vertical reference line at 2010 base year
-  geom_vline(xintercept = 2010.5, colour = "grey30", linewidth = 0.8, linetype = "dashed") +
-  annotate("text", x = 2010.7, y = 3.48, label = "base year →",
-           size = 2.5, colour = "grey40", hjust = 0) +
-  labs(
-    title    = "Affordability gap by income group and year (2010 = 100)",
-    subtitle = "Blue = income grew faster than housing prices  |  Red = housing grew faster than income",
-    x = NULL, y = NULL,
-    caption  = "Sources: SingStat (household income, CPI by income group), HDB (resale transaction prices)\nLabels shown at 5-year intervals and 2025."
-  ) +
-  shared_theme +
-  theme(
-    legend.position  = "right",
-    axis.text.y      = element_text(size = 10, face = "bold"),
-    panel.grid       = element_blank(),
-    axis.text.x      = element_text(size = 9)
-  )
-```
-
-The heatmap encodes all three analytical dimensions simultaneously — time, income group, and gap magnitude — in a single panel. Before 2010, the blue cells confirm that income growth was outpacing housing prices across all groups, with the Top 20% showing the deepest blue (largest income lead). The transition to red begins after 2010 and intensifies sharply from 2020 onward, when the entire right portion of the grid turns deep red. The 2025 column is the darkest across all three rows, confirming the post-COVID resale surge drove affordability to its worst point in the 25-year window. The Bottom 20% row stays a lighter shade of red than the Top 20% in 2025, but this reflects index arithmetic rather than lesser stress — their lower absolute income base makes even a smaller index gap more financially damaging.
-
----
-
-## Key findings {#sec-findings}
-
-Taken together, the four charts support the following answers to the research question:
-
-**Did real income growth keep pace with housing prices?** No, not after 2010. Prior to 2010, real income growth broadly matched or exceeded HDB resale price growth across all income groups. Post-2010 — and especially post-2020 — housing prices have consistently outpaced real income growth.
-
-**Have affordability gaps widened across income groups?** Yes. All three groups face larger affordability gaps in 2025 than at any prior point in the 2000–2025 window. The rate of widening accelerated sharply after 2020. The Bottom 20% gap is the most policy-relevant: their lower absolute income provides less buffer against price growth, and their real income CAGR in the 2020–2025 period is the weakest of all three groups.
-
-**Limitations to note when reading these charts.** Group-specific CPI deflation (used here) is more accurate than a single all-items deflator, but still may understate true housing cost burden for the Bottom 20%. The HDB index reflects transaction prices only and does not capture mortgage servicing costs, which rose sharply in 2022–2024 as interest rates increased. Gross income including employer CPF contributions is used throughout, which overstates disposable income available for housing payments.
+:::
