@@ -20,6 +20,7 @@ execute:
   warning: false
   message: false
 ---
+
 ```{r setup}
 library(tidyverse)
 library(knitr)
@@ -50,19 +51,74 @@ base_theme <- theme_minimal(base_size = 12) +
     axis.text        = element_text(color = "grey30"),
     axis.text.x      = element_text(angle = 45, hjust = 1, size = 9)
   )
-```
-
-## The Improved Visualization
-```{r main-chart, fig.width=13, fig.height=6}
-labels_2025 <- tidy_data %>%
-  filter(Year == 2025) %>%
-  mutate(label = paste0(round(Index_Value, 0)))
 
 events <- tibble(
   xmin  = c(2008, 2020),
   xmax  = c(2009, 2021),
   label = c("GFC", "COVID-19")
 )
+```
+
+---
+
+## Original Visualisation
+
+The original visualisation — *"Average Household Income Per Household vs Purchasing Power Index (PPI)"* — was sourced from Stacked and presents nominal household income across ten deciles alongside a general Purchasing Power Index on a dual axis, covering 2010–2020.
+
+![Original visualisation: Average Household Income Per Household vs PPI](Average-Household-Income-Per-Household-Image.jpg){width=85% fig-align="center"}
+`
+---
+
+## Weaknesses of the Original Visualisation
+
+**1. Dual-axis scale distortion.**
+The original chart plots household income in SGD on the left axis and the Purchasing Power Index on the right axis, with each axis scaled independently. This allows the two series to be visually aligned at arbitrary points, creating a false impression of correlation or divergence that is an artefact of axis scaling rather than a property of the data. Readers cannot reliably judge whether income and purchasing power are actually moving together or apart.
+
+**2. Ten income deciles cause visual congestion.**
+Displaying all ten decile lines simultaneously produces a dense tangle of overlapping curves rendered in similar colours. The legend requires eleven entries (ten deciles plus PPI), forcing constant cross-referencing between legend and chart. No single income group's trajectory can be followed clearly, and distributional differences between groups are obscured rather than revealed.
+
+**3. Nominal income without inflation adjustment.**
+The original presents raw SGD figures unadjusted for inflation. Because all nominal values tend to grow over time, the chart systematically overstates real income gains. A household whose income doubled in nominal terms but faced equivalent CPI growth experienced zero improvement in purchasing power — a distinction the original chart cannot convey.
+
+**4. No explicit affordability metric linking income to housing costs.**
+The Purchasing Power Index reflects a general consumption basket. It does not connect income growth to the specific cost pressure most financially consequential for Singapore households — housing. A reader cannot determine from the original chart whether any income group can actually afford an HDB resale flat, nor how that affordability has changed over time.
+
+**5. Dense legend and high cognitive load.**
+Eleven legend entries combined with the dual-axis structure require substantial reader effort before any analytical insight can be extracted. The chart prioritises completeness over communicability.
+
+---
+
+## Improvements in the Revised Visualisation
+
+**1. Indexed comparison removes dual-axis distortion.**
+Both real income and the HDB resale price series are converted to a common index rebased to 2010 = 100. All series share one y-axis and one scale. Any visual divergence between lines reflects a genuine difference in growth rates — there is no axis manipulation possible. A gap of 30 index points means exactly that, regardless of the absolute income levels underlying it.
+
+**2. Three aggregated income groups reduce cognitive load.**
+The ten deciles are consolidated into Bottom 20%, Middle 60%, and Top 20%. This reduces the number of series from ten to four (three income groups plus HDB) while preserving the distributional contrast directly relevant to the research question. The legend shrinks to two entries per panel.
+
+**3. Faceted layout separates groups without sacrificing comparability.**
+Each income group occupies its own panel with an identical y-axis scale. The HDB resale price line is repeated identically across all three panels, so the reader can compare how far housing costs have outpaced each group's income without needing to visually untangle crossing lines. Cross-group comparison is immediate: the reader sees at a glance whether the red line pulls further above the blue line in the Bottom 20% panel than in others.
+
+**4. Real income deflated by group-specific CPI.**
+Nominal income is deflated using the CPI series specific to each household income group rather than a single all-items index. This reflects the empirical reality that lower-income households face different price pressures than higher-income households, making the income series a genuine measure of purchasing power rather than a nominal proxy.
+
+**5. Shaded ribbon makes the affordability gap an explicit visual object.**
+The area between the income and HDB lines is filled as a shaded band. Rather than asking the reader to mentally estimate the distance between two lines, the chart presents the gap directly as a visible, named region that grows or shrinks over time. This transforms an implied comparison into an explicit affordability metric.
+
+**6. Direct endpoint labels replace axis-reading.**
+The 2025 index values for both series are annotated directly on each panel. The key quantitative finding — the gap between the two series at the end of the study window — is immediately legible without requiring the reader to trace a value back to the y-axis.
+
+**7. Event annotations are horizontal and untruncated.**
+The GFC (2008–2009) and COVID-19 (2020–2021) periods are marked with light vertical bands and clearly readable labels. This replaces the rotated, partially truncated text found in other versions of this chart and allows the reader to connect the affordability trajectory to known economic events without interrupting the flow of reading.
+
+---
+
+## The Improved Visualisation
+
+```{r main-chart, fig.width=13, fig.height=6}
+labels_2025 <- tidy_data %>%
+  filter(Year == 2025) %>%
+  mutate(label = paste0(round(Index_Value, 0)))
 
 p <- ggplot(tidy_data,
             aes(x = Year, y = Index_Value, color = Measure_Type,
@@ -82,12 +138,12 @@ p <- ggplot(tidy_data,
             inherit.aes = FALSE,
             fill = "grey50", alpha = 0.10) +
 
-  # Event labels — inside grey band, rotated, at bottom
+  # Event labels — rotated, inside grey band
   geom_text(data = events,
-          aes(x = (xmin + xmax) / 2, y = 58, label = label),
-          inherit.aes = FALSE,
-          size = 2.5, color = "grey35", fontface = "italic",
-          angle = 90) +
+            aes(x = (xmin + xmax) / 2, y = 58, label = label),
+            inherit.aes = FALSE,
+            size = 2.5, color = "grey35", fontface = "italic",
+            angle = 90) +
 
   # Base year reference line
   geom_hline(yintercept = 100, linetype = "dashed",
@@ -109,7 +165,7 @@ p <- ggplot(tidy_data,
   facet_wrap(~Income_Group, ncol = 3) +
 
   scale_color_manual(values = col_measure, name = NULL) +
-  scale_linetype_manual(values = c("Real Income" = "solid",
+  scale_linetype_manual(values = c("Real Income"      = "solid",
                                    "HDB Resale Price" = "solid"),
                         name = NULL) +
   scale_x_continuous(breaks = seq(2000, 2025, by = 5),
@@ -117,11 +173,8 @@ p <- ggplot(tidy_data,
   scale_y_continuous(
     breaks = seq(60, 180, by = 20),
     limits = c(55, 185),
-    sec.axis = sec_axis(
-      ~ .,
-      breaks = 100,
-      labels = "← base year (2010 = 100)"
-    )
+    sec.axis = sec_axis(~ ., breaks = 100,
+                        labels = "← base year (2010 = 100)")
   ) +
 
   labs(
@@ -143,11 +196,10 @@ p <- ggplot(tidy_data,
 
   base_theme +
   theme(
-    legend.text      = element_text(size = 11),
-    legend.spacing.x = unit(0.4, "cm"),
-    # Style the secondary axis label
-    axis.text.y.right = element_text(size = 8, color = "grey50",
-                                     face = "italic", hjust = 0),
+    legend.text        = element_text(size = 11),
+    legend.spacing.x   = unit(0.4, "cm"),
+    axis.text.y.right  = element_text(size = 8, color = "grey50",
+                                      face = "italic", hjust = 0),
     axis.ticks.y.right = element_line(color = "grey55")
   )
 
@@ -172,12 +224,12 @@ p
 
 ::: {.callout-note collapse="true"}
 ### Affordability gap over time
+
 ```{r gap-chart, fig.width=10, fig.height=5.5}
 gap_labels_2025 <- gap_data %>%
   filter(Year == 2025) %>%
   mutate(
     label = paste0(Income_Group, ": +", round(Affordability_Gap, 1), " pts"),
-    # Stagger y positions to avoid overlapping
     y_pos = case_when(
       Income_Group == "Top 20%"    ~ 59,
       Income_Group == "Bottom 20%" ~ 32,
@@ -189,16 +241,13 @@ ggplot(gap_data, aes(x = Year, y = Affordability_Gap, color = Income_Group)) +
   geom_rect(data = events,
             aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
             inherit.aes = FALSE, fill = "grey50", alpha = 0.10) +
-  # Event labels at bottom, rotated — same as main chart
   geom_text(data = events,
-          aes(x = (xmin + xmax) / 2, y = -39, label = label),
-          inherit.aes = FALSE,
-          size = 2.5, color = "grey35", fontface = "italic",
-          angle = 90) +
+            aes(x = (xmin + xmax) / 2, y = -39, label = label),
+            inherit.aes = FALSE,
+            size = 2.5, color = "grey35", fontface = "italic", angle = 90) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey50", linewidth = 0.5) +
   geom_line(linewidth = 1.1) +
   geom_point(size = 1.8) +
-  # Staggered endpoint labels
   geom_text(
     data = gap_labels_2025,
     aes(y = y_pos, label = label),
@@ -215,28 +264,33 @@ ggplot(gap_data, aes(x = Year, y = Affordability_Gap, color = Income_Group)) +
     breaks = seq(-40, 80, by = 20),
     limits = c(-42, 85)
   ) +
-  labs(title    = "Affordability gap by income group",
-       subtitle = "Gap = HDB index − Real income index  |  Positive = housing outpacing income",
-       x = NULL, y = "Gap (index points)",
-       caption  = "Sources: SingStat, HDB / data.gov.sg") +
+  labs(
+    title    = "Affordability gap by income group",
+    subtitle = "Gap = HDB index − Real income index  |  Positive = housing outpacing income",
+    x = NULL, y = "Gap (index points)",
+    caption  = "Sources: SingStat, HDB / data.gov.sg"
+  ) +
   base_theme
 ```
 :::
 
 ::: {.callout-note collapse="true"}
 ### CAGR by sub-period
-```{r cagr-chart, fig.width=11, fig.height=5}
-cagr_fn <- function(end_val, start_val, n) round(((end_val/start_val)^(1/n) - 1)*100, 2)
 
-periods <- list(c(2000,2010), c(2010,2020), c(2020,2025))
+```{r cagr-chart, fig.width=11, fig.height=5}
+cagr_fn <- function(end_val, start_val, n) round(((end_val / start_val)^(1 / n) - 1) * 100, 2)
+
+periods <- list(c(2000, 2010), c(2010, 2020), c(2020, 2025))
 
 income_cagr <- map_dfr(periods, function(p) {
   tidy_data %>%
     filter(Measure_Type == "Real Income", Year %in% p) %>%
     pivot_wider(names_from = Year, values_from = Index_Value) %>%
-    mutate(CAGR = cagr_fn(.[[4]], .[[3]], p[2]-p[1]),
-           Sub_Period = paste0(p[1],"–",p[2]),
-           Measure = "Real Income") %>%
+    mutate(
+      CAGR       = cagr_fn(.[[4]], .[[3]], p[2] - p[1]),
+      Sub_Period = paste0(p[1], "–", p[2]),
+      Measure    = "Real Income"
+    ) %>%
     select(Income_Group, Sub_Period, Measure, CAGR)
 })
 
@@ -245,30 +299,43 @@ hdb_cagr <- map_dfr(periods, function(p) {
     filter(Measure_Type == "HDB Resale Price", Year %in% p) %>%
     distinct(Year, Index_Value) %>%
     pivot_wider(names_from = Year, values_from = Index_Value)
-  tibble(CAGR = cagr_fn(vals[[2]], vals[[1]], p[2]-p[1]),
-         Sub_Period = paste0(p[1],"–",p[2]),
-         Measure = "HDB Resale Price")
-}) %>% crossing(Income_Group = c("Bottom 20%","Middle 60%","Top 20%"))
+  tibble(
+    CAGR       = cagr_fn(vals[[2]], vals[[1]], p[2] - p[1]),
+    Sub_Period = paste0(p[1], "–", p[2]),
+    Measure    = "HDB Resale Price"
+  )
+}) %>%
+  crossing(Income_Group = c("Bottom 20%", "Middle 60%", "Top 20%"))
 
 cagr_data <- bind_rows(income_cagr, hdb_cagr) %>%
-  mutate(Income_Group = factor(Income_Group, levels = c("Bottom 20%","Middle 60%","Top 20%")),
-         Sub_Period   = factor(Sub_Period, levels = c("2000–2010","2010–2020","2020–2025")),
-         Measure      = factor(Measure, levels = c("Real Income","HDB Resale Price")))
+  mutate(
+    Income_Group = factor(Income_Group, levels = c("Bottom 20%", "Middle 60%", "Top 20%")),
+    Sub_Period   = factor(Sub_Period,   levels = c("2000–2010", "2010–2020", "2020–2025")),
+    Measure      = factor(Measure,      levels = c("Real Income", "HDB Resale Price"))
+  )
 
 ggplot(cagr_data, aes(x = Sub_Period, y = CAGR, fill = Measure)) +
   geom_col(position = position_dodge(0.65), width = 0.55) +
   geom_hline(yintercept = 0, linewidth = 0.4, color = "grey40") +
-  geom_text(aes(label = paste0(round(CAGR,1),"%"),
-                vjust = ifelse(CAGR >= 0, -0.4, 1.3)),
-            position = position_dodge(0.65), size = 2.8, fontface = "bold") +
+  geom_text(
+    aes(label = paste0(round(CAGR, 1), "%"),
+        vjust = ifelse(CAGR >= 0, -0.4, 1.3)),
+    position = position_dodge(0.65),
+    size = 2.8, fontface = "bold"
+  ) +
   facet_wrap(~Income_Group, ncol = 3) +
   scale_fill_manual(values = col_measure, name = NULL) +
-  scale_y_continuous(labels = function(x) paste0(x,"%"),
-                     breaks = seq(-2, 10, by = 2)) +
-  labs(title    = "CAGR of real income vs HDB resale prices by sub-period",
-       subtitle = "Three periods: 2000–2010, 2010–2020, 2020–2025",
-       x = NULL, y = "CAGR (%)",
-       caption  = "Sources: SingStat, HDB / data.gov.sg") +
-  base_theme + theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
+  scale_y_continuous(
+    labels = function(x) paste0(x, "%"),
+    breaks = seq(-2, 10, by = 2)
+  ) +
+  labs(
+    title    = "CAGR of real income vs HDB resale prices by sub-period",
+    subtitle = "Three periods: 2000–2010, 2010–2020, 2020–2025",
+    x = NULL, y = "CAGR (%)",
+    caption  = "Sources: SingStat, HDB / data.gov.sg"
+  ) +
+  base_theme +
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
 ```
 :::
