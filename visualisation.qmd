@@ -15,12 +15,21 @@ format:
     toc-depth: 2
     number-sections: false
     theme: cosmo
+    include-in-header:
+      text: |
+        <style>
+        table {
+          border-top: none !important;
+        }
+        thead tr {
+          border-top: none !important;
+        }
+        </style>
 execute:
   echo: false
   warning: false
   message: false
 ---
-
 ```{r setup}
 library(tidyverse)
 library(knitr)
@@ -59,62 +68,26 @@ events <- tibble(
 )
 ```
 
----
-
 ## Original Visualisation
 
-The original visualisation — *"Average Household Income Per Household vs Purchasing Power Index (PPI)"* — was sourced from Stacked and presents nominal household income across ten deciles alongside a general Purchasing Power Index on a dual axis, covering 2010–2020.
+The original visualisation, *"Average Household Income Per Household vs Purchasing Power Index (PPI)"*, was sourced from Stacked and presents nominal household income across ten deciles alongside a general Purchasing Power Index on a dual axis, covering 2010 to 2020.
 
 ![Original visualisation: Average Household Income Per Household vs PPI](Average-Household-Income-Per-Household-Image.jpg){width=85% fig-align="center"}
-`
----
 
-## Weaknesses of the Original Visualisation
+## Weaknesses and Improvements
 
-**1. Dual-axis scale distortion.**
-The original chart plots household income in SGD on the left axis and the Purchasing Power Index on the right axis, with each axis scaled independently. This allows the two series to be visually aligned at arbitrary points, creating a false impression of correlation or divergence that is an artefact of axis scaling rather than a property of the data. Readers cannot reliably judge whether income and purchasing power are actually moving together or apart.
-
-**2. Ten income deciles cause visual congestion.**
-Displaying all ten decile lines simultaneously produces a dense tangle of overlapping curves rendered in similar colours. The legend requires eleven entries (ten deciles plus PPI), forcing constant cross-referencing between legend and chart. No single income group's trajectory can be followed clearly, and distributional differences between groups are obscured rather than revealed.
-
-**3. Nominal income without inflation adjustment.**
-The original presents raw SGD figures unadjusted for inflation. Because all nominal values tend to grow over time, the chart systematically overstates real income gains. A household whose income doubled in nominal terms but faced equivalent CPI growth experienced zero improvement in purchasing power — a distinction the original chart cannot convey.
-
-**4. No explicit affordability metric linking income to housing costs.**
-The Purchasing Power Index reflects a general consumption basket. It does not connect income growth to the specific cost pressure most financially consequential for Singapore households — housing. A reader cannot determine from the original chart whether any income group can actually afford an HDB resale flat, nor how that affordability has changed over time.
-
-**5. Dense legend and high cognitive load.**
-Eleven legend entries combined with the dual-axis structure require substantial reader effort before any analytical insight can be extracted. The chart prioritises completeness over communicability.
-
----
-
-## Improvements in the Revised Visualisation
-
-**1. Indexed comparison removes dual-axis distortion.**
-Both real income and the HDB resale price series are converted to a common index rebased to 2010 = 100. All series share one y-axis and one scale. Any visual divergence between lines reflects a genuine difference in growth rates — there is no axis manipulation possible. A gap of 30 index points means exactly that, regardless of the absolute income levels underlying it.
-
-**2. Three aggregated income groups reduce cognitive load.**
-The ten deciles are consolidated into Bottom 20%, Middle 60%, and Top 20%. This reduces the number of series from ten to four (three income groups plus HDB) while preserving the distributional contrast directly relevant to the research question. The legend shrinks to two entries per panel.
-
-**3. Faceted layout separates groups without sacrificing comparability.**
-Each income group occupies its own panel with an identical y-axis scale. The HDB resale price line is repeated identically across all three panels, so the reader can compare how far housing costs have outpaced each group's income without needing to visually untangle crossing lines. Cross-group comparison is immediate: the reader sees at a glance whether the red line pulls further above the blue line in the Bottom 20% panel than in others.
-
-**4. Real income deflated by group-specific CPI.**
-Nominal income is deflated using the CPI series specific to each household income group rather than a single all-items index. This reflects the empirical reality that lower-income households face different price pressures than higher-income households, making the income series a genuine measure of purchasing power rather than a nominal proxy.
-
-**5. Shaded ribbon makes the affordability gap an explicit visual object.**
-The area between the income and HDB lines is filled as a shaded band. Rather than asking the reader to mentally estimate the distance between two lines, the chart presents the gap directly as a visible, named region that grows or shrinks over time. This transforms an implied comparison into an explicit affordability metric.
-
-**6. Direct endpoint labels replace axis-reading.**
-The 2025 index values for both series are annotated directly on each panel. The key quantitative finding — the gap between the two series at the end of the study window — is immediately legible without requiring the reader to trace a value back to the y-axis.
-
-**7. Event annotations are horizontal and untruncated.**
-The GFC (2008–2009) and COVID-19 (2020–2021) periods are marked with light vertical bands and clearly readable labels. This replaces the rotated, partially truncated text found in other versions of this chart and allows the reader to connect the affordability trajectory to known economic events without interrupting the flow of reading.
-
----
+| # | Weakness in Original | Improvement in Our Visualisation |
+|:--:|---|---|
+| 1 | **Dual y-axis distortion.** Independently scaled axes create false impressions of correlation between income and PPI. | **Indexed comparison removes dual-axis distortion.** Both real income and HDB resale price series are converted to a common index rebased to 2010 = 100. All series share one y-axis and one scale, so any visual divergence reflects a genuine difference in growth rates. |
+| 2 | **Ten income deciles.** Overlapping lines and an 11-entry legend cause visual congestion and reduce interpretability. | **Three aggregated income groups reduce cognitive load.** The ten deciles are consolidated into Bottom 20%, Middle 60%, and Top 20%, reducing the number of series from ten to four while preserving the distributional contrast relevant to the research question. |
+| 3 | **Nominal income values.** Unadjusted for inflation, systematically overstating real income gains over time. | **Real income deflated by group-specific CPI.** Nominal income is deflated using the CPI series specific to each household income group, reflecting the reality that lower-income households face different price pressures than higher-income households. |
+| 4 | **General Purchasing Power Index.** No link to housing costs, which represent the largest household expenditure in Singapore. | **HDB resale prices used as an explicit housing cost proxy.** The faceted layout places the HDB line identically across all three panels, so readers can directly compare how far housing costs have outpaced each income group without untangling crossing lines. |
+| 5 | **Dense legend and high cognitive load.** Readers must constantly cross-reference between legend and chart to extract any insight. | **Shaded ribbon makes the affordability gap an explicit visual object.** The area between the income and HDB lines is filled as a shaded band, presenting the gap directly as a visible, named region rather than asking readers to mentally estimate the distance between two lines. |
+| 6 | **No explicit affordability metric.** Readers must mentally estimate the distance between two independently scaled series. | **Direct endpoint labels replace axis-reading.** The 2025 index values for both series are annotated directly on each panel, making the key quantitative finding immediately legible without tracing values back to the y-axis. |
+| 7 | **No economic context provided.** The original chart has no annotations marking key events that affected income or housing prices. | **Event annotations mark key economic periods.** The GFC (2008 to 2009) and COVID-19 (2020 to 2021) periods are marked with light vertical bands and clearly readable labels, allowing readers to connect the affordability trajectory to known economic events. |
+: {tbl-colwidths="[4,48,48]"}
 
 ## The Improved Visualisation
-
 ```{r main-chart, fig.width=13, fig.height=6}
 labels_2025 <- tidy_data %>%
   filter(Year == 2025) %>%
@@ -124,7 +97,6 @@ p <- ggplot(tidy_data,
             aes(x = Year, y = Index_Value, color = Measure_Type,
                 linetype = Measure_Type)) +
 
-  # Shaded gap ribbon
   geom_ribbon(
     data = gap_data,
     aes(x = Year, ymin = `Real Income`, ymax = `HDB Resale Price`),
@@ -132,29 +104,24 @@ p <- ggplot(tidy_data,
     fill = "#B2182B", alpha = 0.07
   ) +
 
-  # Event shading
   geom_rect(data = events,
             aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
             inherit.aes = FALSE,
             fill = "grey50", alpha = 0.10) +
 
-  # Event labels — rotated, inside grey band
   geom_text(data = events,
             aes(x = (xmin + xmax) / 2, y = 58, label = label),
             inherit.aes = FALSE,
             size = 2.5, color = "grey35", fontface = "italic",
             angle = 90) +
 
-  # Base year reference line
   geom_hline(yintercept = 100, linetype = "dashed",
              color = "grey55", linewidth = 0.45) +
 
-  # Main lines
   geom_line(linewidth = 1.1) +
   geom_point(data = tidy_data %>% filter(Year %% 5 == 0),
              size = 2.2, shape = 21, fill = "white", stroke = 1.1) +
 
-  # 2025 endpoint labels
   geom_text(
     data = labels_2025,
     aes(label = label),
@@ -188,7 +155,7 @@ p <- ggplot(tidy_data,
     caption = paste0(
       "Sources: Department of Statistics Singapore — Average Monthly Household Employment Income by Decile; ",
       "CPI by Household Income Group (2024 base year).\n",
-      "Housing & Development Board / data.gov.sg — HDB Resale Flat Prices (transaction records, 2000–2025).\n",
+      "Housing and Development Board / data.gov.sg — HDB Resale Flat Prices (transaction records, 2000–2025).\n",
       "Note: Income groups deflated using their respective group-specific CPI. ",
       "HDB index computed as annual median resale price, rebased to 2010 = 100."
     )
@@ -206,7 +173,7 @@ p <- ggplot(tidy_data,
 p
 ```
 
-**Reading the chart.** Each panel shows one income group. The blue line tracks real (inflation-adjusted) household income; the red line tracks HDB resale prices. Both are indexed to 2010 = 100, so the lines share a common baseline — any divergence directly reflects a change in relative affordability. The shaded band between the lines is the affordability gap: when red rises above blue, housing is outpacing income.
+**Reading the chart.** Each panel shows one income group. The blue line tracks real (inflation-adjusted) household income; the red line tracks HDB resale prices. Both are indexed to 2010 = 100, so the lines share a common baseline. The shaded band between the lines is the affordability gap: when red rises above blue, housing is outpacing income.
 
 ---
 
@@ -214,9 +181,9 @@ p
 
 **Before 2010**, real income broadly kept pace with or exceeded HDB resale prices across all three income groups, reflecting relative affordability stability in the early 2000s.
 
-**From 2010 onward**, resale prices diverge upward. The gap widens progressively, then accelerates sharply after 2020 — coinciding with the post-COVID resale surge driven by demand brought forward from the pandemic period.
+**From 2010 onward**, resale prices diverge upward. The gap widens progressively, then accelerates sharply after 2020, coinciding with the post-COVID resale surge driven by demand brought forward from the pandemic period.
 
-**By 2025**, the HDB index reaches 171.6 — its highest level in the 25-year window — while real income indices are 140.5 (Bottom 20%), 141.8 (Middle 60%), and 113.8 (Top 20%). The affordability gap is largest in absolute index-point terms for the Top 20% (57.8 points), but this reflects real income plateauing under CPI deflation rather than greater financial stress. **The Bottom 20% gap (31.1 points) is the most policy-relevant**: their lower absolute income provides far less buffer against rising prices, and their real income growth in 2020–2025 is the weakest of all three groups.
+**By 2025**, the HDB index reaches 171.6, its highest level in the 25-year window, while real income indices are 140.5 (Bottom 20%), 141.8 (Middle 60%), and 113.8 (Top 20%). The affordability gap is largest in absolute index-point terms for the Top 20% (57.8 points), but this reflects real income plateauing under CPI deflation rather than greater financial stress. **The Bottom 20% gap (31.1 points) is the most policy-relevant**: their lower absolute income provides far less buffer against rising prices, and their real income growth in 2020 to 2025 is the weakest of all three groups.
 
 ---
 
@@ -225,6 +192,7 @@ p
 ::: {.callout-note collapse="true"}
 ### Affordability gap over time
 
+Before 2010, all three income groups show negative gaps, meaning real income growth was outpacing HDB resale prices. From 2010 onward, gaps turn persistently positive and widen sharply after 2020. By 2025, the Top 20% shows the largest index-point gap (+57.8 pts), though this reflects CPI deflation eroding their nominal gains rather than greater financial hardship. The Bottom 20% gap (+31.1 pts) and Middle 60% gap (+29.8 pts) are more policy-relevant given their lower absolute income buffers.
 ```{r gap-chart, fig.width=10, fig.height=5.5}
 gap_labels_2025 <- gap_data %>%
   filter(Year == 2025) %>%
@@ -266,7 +234,7 @@ ggplot(gap_data, aes(x = Year, y = Affordability_Gap, color = Income_Group)) +
   ) +
   labs(
     title    = "Affordability gap by income group",
-    subtitle = "Gap = HDB index − Real income index  |  Positive = housing outpacing income",
+    subtitle = "Gap = HDB index minus Real income index  |  Positive = housing outpacing income",
     x = NULL, y = "Gap (index points)",
     caption  = "Sources: SingStat, HDB / data.gov.sg"
   ) +
@@ -277,6 +245,7 @@ ggplot(gap_data, aes(x = Year, y = Affordability_Gap, color = Income_Group)) +
 ::: {.callout-note collapse="true"}
 ### CAGR by sub-period
 
+In the 2000 to 2010 period, HDB price growth (4.3% per year) already outpaced real income growth across all groups, with the Bottom 20% recording a slightly negative real income CAGR (-0.1%). The 2010 to 2020 period saw income growth recover slightly while HDB price growth moderated (1.5% per year). The 2020 to 2025 period is the most damaging: HDB prices surged at 8.1% per year across all groups while real income growth slowed, with the Top 20% recording a negative real income CAGR (-0.5%), directly explaining the widening gaps seen above.
 ```{r cagr-chart, fig.width=11, fig.height=5}
 cagr_fn <- function(end_val, start_val, n) round(((end_val / start_val)^(1 / n) - 1) * 100, 2)
 
@@ -288,7 +257,7 @@ income_cagr <- map_dfr(periods, function(p) {
     pivot_wider(names_from = Year, values_from = Index_Value) %>%
     mutate(
       CAGR       = cagr_fn(.[[4]], .[[3]], p[2] - p[1]),
-      Sub_Period = paste0(p[1], "–", p[2]),
+      Sub_Period = paste0(p[1], " to ", p[2]),
       Measure    = "Real Income"
     ) %>%
     select(Income_Group, Sub_Period, Measure, CAGR)
@@ -301,7 +270,7 @@ hdb_cagr <- map_dfr(periods, function(p) {
     pivot_wider(names_from = Year, values_from = Index_Value)
   tibble(
     CAGR       = cagr_fn(vals[[2]], vals[[1]], p[2] - p[1]),
-    Sub_Period = paste0(p[1], "–", p[2]),
+    Sub_Period = paste0(p[1], " to ", p[2]),
     Measure    = "HDB Resale Price"
   )
 }) %>%
@@ -310,7 +279,7 @@ hdb_cagr <- map_dfr(periods, function(p) {
 cagr_data <- bind_rows(income_cagr, hdb_cagr) %>%
   mutate(
     Income_Group = factor(Income_Group, levels = c("Bottom 20%", "Middle 60%", "Top 20%")),
-    Sub_Period   = factor(Sub_Period,   levels = c("2000–2010", "2010–2020", "2020–2025")),
+    Sub_Period   = factor(Sub_Period,   levels = c("2000 to 2010", "2010 to 2020", "2020 to 2025")),
     Measure      = factor(Measure,      levels = c("Real Income", "HDB Resale Price"))
   )
 
@@ -331,7 +300,7 @@ ggplot(cagr_data, aes(x = Sub_Period, y = CAGR, fill = Measure)) +
   ) +
   labs(
     title    = "CAGR of real income vs HDB resale prices by sub-period",
-    subtitle = "Three periods: 2000–2010, 2010–2020, 2020–2025",
+    subtitle = "Three periods: 2000 to 2010, 2010 to 2020, 2020 to 2025",
     x = NULL, y = "CAGR (%)",
     caption  = "Sources: SingStat, HDB / data.gov.sg"
   ) +
