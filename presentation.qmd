@@ -1,0 +1,942 @@
+---
+title: "Real Income vs Housing Prices in Singapore"
+subtitle: "AAI1001 – Data Engineering and Visualization | AY25/26 Tri 2"
+author:
+  - name: "<span style='font-size: 0.55em; font-weight: normal; line-height: 1.8;'>Shina Shih Xin Rong (2402781)<br>Jeanie Cherie Chua Yue-Ning (2403083)<br>Claudia Yue Xin Ying (2401817)<br>Nurul Zahirah Binte Muhamadnoh (2401671)<br>Anushka Chourasia (2503769)</span>"
+date: 2026-03-22
+date-format: "dddd MMM DD, YYYY"
+
+toc: true
+toc-depth: 1
+number-sections: false
+engine: knitr
+format:
+  revealjs:
+    self-contained: true
+    embed-resources: true
+    theme: [default, custom.scss]
+    width: 1600
+    height: 900
+    margin: 0.05
+    min-scale: 0.2
+    max-scale: 2.0
+    scrollable: true
+    slide-number: true
+    preview-links: false
+    incremental: false
+    footer: "AAI1001 Team Project – Real Income vs Housing Prices in Singapore"
+    html-table-processing: none
+    code-block-height: 700px
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+library(knitr)
+library(gt)
+library(scales)
+
+tidy_data <- readRDS("tidy_data.rds")
+
+gap_data <- tidy_data |>
+  pivot_wider(names_from = Measure_Type, values_from = Index_Value) |>
+  mutate(Affordability_Gap = `HDB Resale Price` - `Real Income`)
+
+col_measure <- c("Real Income" = "#2166AC", "HDB Resale Price" = "#B2182B")
+col_group   <- c("Bottom 20%" = "#D73027", "Middle 60%" = "#FC8D59",
+                  "Top 20%" = "#4575B4")
+
+base_theme <- theme_minimal(base_size = 14) +
+  theme(
+    plot.title       = element_text(face = "bold", size = 20, margin = margin(b = 6)),
+    plot.subtitle    = element_text(size = 13, color = "grey40", margin = margin(b = 12)),
+    plot.caption     = element_text(size = 9, color = "grey55", hjust = 0, margin = margin(t = 10)),
+    plot.background  = element_rect(fill = "#FAFAFA", color = NA),
+    panel.background = element_rect(fill = "#FAFAFA", color = NA),
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(color = "grey90"),
+    legend.position  = "bottom",
+    legend.key.width = unit(1.5, "cm"),
+    legend.text      = element_text(size = 12),
+    strip.text       = element_text(face = "bold", size = 14, margin = margin(b = 6)),
+    axis.text        = element_text(color = "grey30"),
+    axis.text.x      = element_text(angle = 45, hjust = 1, size = 11)
+  )
+
+events <- tibble(
+  xmin  = c(2008, 2020),
+  xmax  = c(2009, 2021),
+  label = c("GFC", "COVID-19")
+)
+```
+
+```{css, echo=FALSE}
+code.sourceCode { font-size: 1.2em; }
+.reveal .cell-output-stdout { font-size: 1.2em; }
+```
+
+
+<!-- ======================================================================= -->
+<!-- SECTION 1: ORIGINAL VISUALISATION & CRITIQUE                            -->
+<!-- ======================================================================= -->
+
+# 1.0 Original Visualisation & Critique
+
+
+## Agenda {style="font-size: 0.85em;"}
+
+<hr>
+
+::: {style="font-size: 0.95em; line-height: 1.9;"}
+
+| | Section | Speaker |
+|---|---|---|
+| **1** | Original Visualisation & Critique | Shina |
+| **2** | Data Selection & Sources | Jeanie |
+| **3** | Data Engineering Workflow | Claudia |
+| **4** | Improved Visualisation | Nurul Zahirah |
+| **5** | Insights & Analysis | Anushka |
+| **6** | Conclusion & Future Work | All |
+
+:::
+
+::: {style="font-size: 0.75em; color: grey; margin-top: 16px;"}
+Estimated duration: ~13 minutes + Q&A
+:::
+
+::: {.notes}
+**Speaker: Shina.** Welcome everyone. Today our team will present our analysis of real income versus housing prices in Singapore. Here is a quick overview of what we will cover and who will present each section. Let's get started.
+:::
+
+
+## 1.1 Previous Visualisation {style="font-size: 0.80em;"}
+
+<hr>
+
+:::: columns
+::: {.column width="55%"}
+
+::: {style="background: #2166AC; color: white; padding: 12px 18px; border-radius: 6px; font-size: 0.85em; margin-bottom: 16px;"}
+**Research Question:** *Did real income growth for lower-income households keep pace with housing price growth between 2000 and 2025, and have affordability gaps widened across income groups over time?*
+:::
+
+- **~80% of Singapore residents** live in HDB flats
+- Housing is the **single largest financial commitment** most families make
+- When prices outpace income → **longer saving horizons, higher debt burdens**
+- Direct policy relevance for **housing grants, CPF policy, income support**
+
+:::
+::: {.column width="45%"}
+
+::: {style="text-align: center; font-weight: bold; font-size: 0.75em; color: #555; margin-bottom: 6px;"}
+Previous Visualisation
+:::
+
+![](Average-Household-Income-Per-Household-Image.jpg){width=100%}
+
+::: {style="font-size: 0.6em; color: grey; margin-top: 4px;"}
+Source: Stacked — [*Avg Household Income vs PPI*](https://stacked.sg/blog/average-household-income-in-singapore), 2010–2020.
+:::
+
+:::
+::::
+
+::: {.notes}
+**Speaker: Shina.** We chose this visualisation from the property blog Stacked, which plots average household income by decile against the Private Property Index. It caught our attention because housing affordability is a pressing issue in Singapore, where about 80% of residents live in HDB flats. Our research question asks whether real income growth — especially for lower-income households — has kept pace with housing price growth over the past 25 years.
+:::
+
+
+## 1.2 Strengths of the Original {style="font-size: 0.72em;"}
+
+<hr>
+
+:::: columns
+::: {.column width="50%"}
+
+::: {style="text-align: center; font-weight: bold; font-size: 0.7em; color: #555; margin-bottom: 4px;"}
+Previous Visualisation
+:::
+
+![](Average-Household-Income-Per-Household-Image.jpg){width=95%}
+
+::: {style="font-size: 0.6em; color: grey; margin-top: 4px;"}
+Source: Stacked — [*Avg Household Income vs PPI*](https://stacked.sg/blog/average-household-income-in-singapore), 2010–2020.
+:::
+
+:::
+::: {.column width="50%"}
+
+**What the original does well:**
+
+- Covers a **meaningful time span** (2010–2020) with consistent annual data
+- Uses **official decile-level income data** — granular and authoritative
+- Poses a **relevant question** that resonates with Singapore's housing discourse
+- Clean, **minimal layout** with a clear title and readable axis labels
+
+:::
+::::
+
+::: {.notes}
+**Speaker: Shina.** Before we dive into weaknesses, let's acknowledge what the original does well. It uses official SingStat decile data, covers a meaningful time period, and asks a question that resonates with Singaporeans. However, there are several design issues we identified, which I'll walk through on the next slide.
+:::
+
+
+## 1.3 Critique & Proposed Improvements {style="font-size: 0.72em;"}
+
+<hr>
+
+```{r}
+#| echo: false
+
+tribble(
+  ~No, ~Weakness, ~Improvement,
+  "1", "**Dual y-axis distortion** — falsely suggests correlation", "**Common index (2010 = 100)** — single y-axis",
+  "2", "**Ten overlapping lines** — visual congestion", "**Three aggregated groups** — Bottom/Middle/Top",
+  "3", "**Nominal income** — overstates real gains", "**Group-specific CPI deflation**",
+  "4", "**No housing metric** — general PPI used", "**HDB resale price overlay**",
+  "5", "**Dense legend** — high cognitive load", "**Shaded affordability gap ribbon**",
+  "6", "**No affordability metric** — must estimate gaps", "**Direct endpoint labels** (2025 values)",
+  "7", "**No economic context**", "**GFC & COVID-19 annotations**"
+) |>
+  gt() |> fmt_markdown(columns = c(Weakness, Improvement)) |>
+  cols_label(No = "#", Weakness = "Weakness in Original", Improvement = "Our Improvement") |>
+  tab_options(table.font.size = 16, column_labels.background.color = "lightblue",
+              column_labels.font.weight = "bold", table.width = pct(100), data_row.padding = px(3)) |>
+  cols_width(No ~ px(40), Weakness ~ px(520), Improvement ~ px(520)) |>
+  tab_style(style = cell_fill(color = "gray95"), locations = cells_body(rows = c(2, 4, 6))) |>
+  cols_align(align = "center", columns = No)
+```
+
+::: {style="font-size: 0.72em; margin-top: 10px; color: #555;"}
+Each weakness maps to a specific, actionable improvement that we implement in Section 4.
+:::
+
+::: {.notes}
+**Speaker: Shina.** Here are seven specific weaknesses we identified. The most critical is the dual y-axis, which distorts the relationship between income and prices. We also address the use of nominal income, the ten congested lines, and the lack of any explicit affordability metric. Each weakness maps directly to an improvement we will demonstrate later. I'll now hand over to Jeanie for the data sources.
+:::
+
+
+<!-- ======================================================================= -->
+<!-- SECTION 2: DATA SOURCES                                                 -->
+<!-- ======================================================================= -->
+
+# 2.0 Data Selection & Sources
+
+
+## 2.1 Data Sources {style="font-size: 0.82em;"}
+
+<hr>
+
+```{r}
+#| echo: false
+
+tribble(
+  ~Source, ~Dataset, ~Period, ~Purpose,
+  "**Department of Statistics Singapore (SingStat)**",
+  "Average Monthly Household Employment Income by Decile",
+  "2000–2025",
+  "Nominal income across 10 deciles, aggregated into 3 groups",
+
+  "**Department of Statistics Singapore (SingStat)**",
+  "CPI by Household Income Group (2024 base year)",
+  "2000–2025",
+  "Group-specific price deflator for real income calculation",
+
+  "**Housing & Development Board / data.gov.sg**",
+  "HDB Resale Flat Prices (transaction-level records)",
+  "2000–2025",
+  "Annual median resale price → housing cost index"
+) |>
+  gt() |> fmt_markdown(columns = Source) |>
+  tab_options(table.font.size = 22, column_labels.background.color = "lightblue",
+              column_labels.font.weight = "bold", table.align = "left",
+              table.width = pct(100), data_row.padding = px(8)) |>
+  cols_width(Source ~ px(380), Dataset ~ px(400), Period ~ px(160), Purpose ~ px(460)) |>
+  tab_style(style = cell_fill(color = "gray95"), locations = cells_body(rows = 2))
+```
+
+. . .
+
+**Why these sources?**
+
+- SingStat provides the **only official decile-level income breakdown** for Singapore
+- Group-specific CPI is available **only from SingStat** (Lowest 20%, Middle 60%, Top 20%)
+- HDB resale data from data.gov.sg is the **most granular public record** of actual market prices
+- Contextual datasets (Private Property Index, Rental Indices) were explored but not used
+
+::: {.notes}
+**Speaker: Jeanie.** We used three datasets, all from official Singapore government sources. SingStat gives us two key inputs: household income by decile, and CPI broken down by income group — which is critical for deflating nominal income accurately. The HDB resale flat prices come from data.gov.sg, providing transaction-level records. We explored private property and rental indices but excluded them to keep the scope focused on HDB, which affects the majority of Singaporeans.
+:::
+
+
+## 2.2 Why These Choices Matter {style="font-size: 0.82em;"}
+
+<hr>
+
+```{r}
+#| echo: false
+
+tribble(
+  ~Choice, ~Reason, ~Alternative_Rejected,
+  "**Group-specific CPI** (not national CPI)",
+  "Lower-income households spend more on housing/food — single CPI masks distributional differences",
+  "National CPI would understate cost burden on Bottom 20%",
+
+  "**HDB resale prices** (not BTO or private)",
+  "~80% of residents in HDB; resale reflects actual prices paid, responsive to demand shocks",
+  "BTO prices are government-set; private affects a smaller population",
+
+  "**Annual median** (not mean)",
+  "Robust to outlier transactions (e.g., million-dollar flats)",
+  "Mean skewed by high-value outliers",
+
+  "**2010 = 100 base year**",
+  "Mid-range year allows comparison before and after base, avoids end-point bias",
+  "2000 or 2025 as base compresses one end of scale"
+) |>
+  gt() |> fmt_markdown(columns = Choice) |>
+  cols_label(Choice = "Design Choice", Reason = "Why We Chose This", Alternative_Rejected = "Alternative Considered") |>
+  tab_options(table.font.size = 19, column_labels.background.color = "lightblue",
+              column_labels.font.weight = "bold", table.align = "left",
+              table.width = pct(100), data_row.padding = px(7)) |>
+  cols_width(Choice ~ px(300), Reason ~ px(500), Alternative_Rejected ~ px(420)) |>
+  tab_style(style = cell_fill(color = "gray95"), locations = cells_body(rows = c(2, 4)))
+```
+
+::: {.notes}
+**Speaker: Jeanie.** Every data choice has trade-offs, so here we explain why we chose group-specific CPI over national CPI, HDB resale over BTO or private, median over mean, and 2010 as the base year. The most important decision is the group-specific CPI — lower-income households spend a larger share on housing and food, so applying a single national CPI would understate the real cost burden on the Bottom 20%. I'll now hand over to Claudia for the data engineering workflow.
+:::
+
+
+## 2.3 Data Flow: Sources to Tidy Dataset {style="font-size: 0.82em;"}
+
+<hr>
+
+```{r}
+#| echo: false
+
+tribble(
+  ~Stage, ~Input, ~Output, ~Key_Operation,
+  "1. Ingest", "3 raw sources (Excel + CSV)", "3 raw data frames", "read_excel(), read_csv()",
+  "2. Clean & Aggregate", "10 deciles × 26 years", "3 groups × 26 years", "case_when() → Bottom 20%, Middle 60%, Top 20%",
+  "3. Deflate", "Nominal income + group CPI", "Real income (2024 SGD)", "Real = Nominal ÷ (CPI / 100)",
+  "4. Index", "Real income + HDB median", "All series at 2010 = 100", "Index = Value ÷ Value₂₀₁₀ × 100",
+  "5. Join & Export", "Income index + HDB index", "tidy_data.rds", "bind_rows() → 156 rows × 4 cols"
+) |>
+  gt() |>
+  cols_label(Stage = "Stage", Input = "Input", Output = "Output", Key_Operation = "Key Operation") |>
+  tab_options(table.font.size = 20, column_labels.background.color = "lightblue",
+              column_labels.font.weight = "bold", table.align = "left",
+              table.width = pct(100), data_row.padding = px(6)) |>
+  cols_width(Stage ~ px(180), Input ~ px(310), Output ~ px(300), Key_Operation ~ px(420)) |>
+  tab_style(style = cell_fill(color = "gray95"), locations = cells_body(rows = c(2, 4)))
+```
+
+. . .
+
+**Final tidy dataset — 4 analytical dimensions:**
+
+- **Year** — time dimension (2000–2025)
+- **Income Group** — distributional dimension (Bottom 20%, Middle 60%, Top 20%)
+- **Measure Type** — comparison dimension (Real Income vs HDB Resale Price)
+- **Index Value** — quantitative measure (2010 = 100)
+
+::: {.notes}
+**Speaker: Jeanie.** This table summarises the full pipeline at a glance — from ingesting three raw files to producing a tidy dataset with 156 rows and 4 columns. The key transformation steps are aggregation from 10 deciles into 3 groups, CPI deflation, and rebasing to a common index. Claudia will now walk you through the detailed implementation.
+:::
+
+
+<!-- ======================================================================= -->
+<!-- SECTION 3: DATA ENGINEERING WORKFLOW                                    -->
+<!-- ======================================================================= -->
+
+# 3.0 Data Engineering Workflow
+
+
+## 3.1 Pipeline Overview {style="font-size: 0.75em;"}
+
+<hr>
+
+:::: columns
+::: {.column width="55%"}
+
+**Pipeline Steps**
+
+```{r}
+#| echo: false
+
+tribble(
+  ~Step, ~Description,
+  "1", "**Import** — Load raw Excel/CSV from SingStat and data.gov.sg",
+  "2", "**Clean** — Remove metadata rows, standardize labels, filter 2000–2025",
+  "3", "**Aggregate** — Collapse 10 deciles into 3 groups (avg of deciles)",
+  "4", "**Deflate** — Apply group-specific CPI: nominal → real income",
+  "5", "**Index** — Rebase all series to 2010 = 100",
+  "6", "**Join** — Merge income + HDB index by Year × Group",
+  "7", "**Validate** — Confirm rebasing, check missing values and row counts",
+  "8", "**Export** — Save as tidy_data.rds (156 rows × 4 cols)"
+) |>
+  gt() |> fmt_markdown(columns = Description) |>
+  cols_label(Step = "#", Description = "Pipeline Step") |>
+  tab_options(table.font.size = 18, column_labels.background.color = "lightblue",
+              column_labels.font.weight = "bold", table.width = pct(100), data_row.padding = px(4)) |>
+  cols_width(Step ~ px(40), Description ~ px(700)) |>
+  cols_align(align = "center", columns = Step) |>
+  tab_style(style = cell_fill(color = "gray95"), locations = cells_body(rows = c(2, 4, 6, 8)))
+```
+
+:::
+::: {.column width="45%"}
+
+**Key Design Decisions**
+
+```{r}
+#| echo: false
+
+tribble(
+  ~Decision, ~Rationale,
+  "Group-specific CPI over national CPI",
+  "Captures different price baskets by income group",
+  "Median resale price over mean",
+  "Robust to outlier transactions (million-dollar flats)",
+  "CPI base year rebasing (2024 → 2010)",
+  "Ensures all indices share a common reference year",
+  "HDB replicated across groups",
+  "Same price index for all groups enables faceted comparison"
+) |>
+  gt() |>
+  cols_label(Decision = "Decision", Rationale = "Rationale") |>
+  tab_options(table.font.size = 17, column_labels.background.color = "lightblue",
+              column_labels.font.weight = "bold", table.width = pct(100), data_row.padding = px(4)) |>
+  cols_width(Decision ~ px(300), Rationale ~ px(380)) |>
+  tab_style(style = cell_fill(color = "gray95"), locations = cells_body(rows = c(2, 4)))
+```
+
+:::
+::::
+
+::: {.notes}
+**Speaker: Claudia.** Here is the full 8-step pipeline. The left table shows each step from raw import to export, and the right table explains the key decisions we made along the way. I'll show the actual R code for the most important transformations on the next slide.
+:::
+
+
+## 3.2 Code Detail {style="font-size: 0.72em;"}
+
+<hr>
+
+:::: columns
+::: {.column width="55%"}
+
+**Step 1: Aggregate deciles into income groups**
+
+```{r}
+#| echo: true
+#| eval: false
+
+income_grouped <- income_long %>%
+  mutate(
+    Group = case_when(
+      Decile %in% c("1st (Lowest)", "2nd")
+        ~ "Bottom 20%",
+      Decile %in% c("3rd", "4th", "5th",
+                     "6th", "7th", "8th")
+        ~ "Middle 60%",
+      Decile %in% c("9th", "10th (Highest)")
+        ~ "Top 20%"
+    )
+  ) %>%
+  group_by(Group, Year) %>%
+  summarise(Income_Nominal = mean(Income_Nominal),
+            .groups = "drop")
+```
+
+**Step 2: Deflate nominal → real income**
+
+```{r}
+#| echo: true
+#| eval: false
+
+income_real <- income_grouped %>%
+  left_join(cpi_grouped,
+            by = c("Group", "Year")) %>%
+  mutate(Income_Real = Income_Nominal / (CPI / 100))
+```
+
+:::
+::: {.column width="45%"}
+
+**Step 3: Rebase to 2010 = 100**
+
+```{r}
+#| echo: true
+#| eval: false
+
+base_income <- income_real %>%
+  filter(Year == 2010) %>%
+  select(Group, Base_Real = Income_Real)
+
+income_indexed <- income_real %>%
+  left_join(base_income, by = "Group") %>%
+  mutate(Income_Index =
+    round(Income_Real / Base_Real * 100, 1))
+```
+
+**Step 4: Combine into tidy format**
+
+```{r}
+#| echo: true
+#| eval: false
+
+tidy_data <- bind_rows(
+  income_long_final,
+  hdb_long_final
+) %>%
+  mutate(
+    Income_Group = factor(Income_Group,
+      levels = c("Bottom 20%",
+                 "Middle 60%", "Top 20%")),
+    Measure_Type = factor(Measure_Type,
+      levels = c("Real Income",
+                 "HDB Resale Price"))
+  ) %>%
+  arrange(Year, Income_Group, Measure_Type)
+```
+
+:::
+::::
+
+::: {.notes}
+**Speaker: Claudia.** These four code blocks show the core transformations. Step 1 collapses ten deciles into three meaningful groups using case_when. Step 2 joins group-specific CPI and divides nominal income to get real income. Step 3 rebases everything to 2010 equals 100. And Step 4 binds the income and HDB series into a single tidy data frame. All code is fully reproducible in the data-pipeline.qmd file included in our ZIP submission.
+:::
+
+
+## 3.3 Validation & Quality Checks {style="font-size: 0.78em;"}
+
+<hr>
+
+:::: columns
+::: {.column width="50%"}
+
+### Checks Performed
+
+- All indices = **exactly 100 in 2010** ✓
+- **No missing values** after joins ✓
+- **78 income rows** (26 yrs × 3 groups) ✓
+- **156 total rows** (78 income + 78 HDB) ✓
+- Cross-checked against raw SingStat tables ✓
+
+:::
+::: {.column width="50%"}
+
+### Final Dataset Structure
+
+```{r}
+#| echo: false
+
+tribble(
+  ~Column, ~Type, ~Description,
+  "Year", "integer", "2000–2025",
+  "Income_Group", "factor", "Bottom 20%, Middle 60%, Top 20%",
+  "Measure_Type", "factor", "Real Income / HDB Resale Price",
+  "Index_Value", "numeric", "Index (2010 = 100)"
+) |>
+  gt() |>
+  tab_options(table.font.size = 22, column_labels.background.color = "lightblue",
+              column_labels.font.weight = "bold", data_row.padding = px(6), table.width = pct(100)) |>
+  tab_style(style = cell_fill(color = "gray95"), locations = cells_body(rows = c(2, 4)))
+```
+
+::: {style="font-size: 0.8em; margin-top: 8px;"}
+Full code: `data-pipeline.qmd` (included in ZIP).
+:::
+
+:::
+::::
+
+::: {.notes}
+**Speaker: Claudia.** Before visualising, we validated the dataset. All indices are exactly 100 in 2010, there are no missing values, and row counts match expectations. The final tidy dataset has just four columns — Year, Income Group, Measure Type, and Index Value — making it straightforward to visualise. Nurul Zahirah will now present the improved visualisation.
+:::
+
+
+<!-- ======================================================================= -->
+<!-- SECTION 4: IMPROVED VISUALISATION                                       -->
+<!-- ======================================================================= -->
+
+# 4.0 Improved Visualisation
+
+
+## 4.1 Real Income vs HDB Resale Price Index
+
+<hr>
+
+```{r}
+#| echo: false
+#| fig-width: 14
+#| fig-height: 6.5
+
+labels_2025 <- tidy_data |> filter(Year == 2025) |> mutate(label = paste0(round(Index_Value, 0)))
+
+ggplot(tidy_data, aes(x = Year, y = Index_Value, color = Measure_Type, linetype = Measure_Type)) +
+  geom_ribbon(data = gap_data, aes(x = Year, ymin = `Real Income`, ymax = `HDB Resale Price`),
+              inherit.aes = FALSE, fill = "#B2182B", alpha = 0.07) +
+  geom_rect(data = events, aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
+            inherit.aes = FALSE, fill = "grey50", alpha = 0.10) +
+  geom_text(data = events, aes(x = (xmin + xmax) / 2, y = 58, label = label),
+            inherit.aes = FALSE, size = 3, color = "grey35", fontface = "italic", angle = 90) +
+  geom_hline(yintercept = 100, linetype = "dashed", color = "grey55", linewidth = 0.45) +
+  geom_line(linewidth = 1.2) +
+  geom_point(data = tidy_data |> filter(Year %% 5 == 0), size = 2.5, shape = 21, fill = "white", stroke = 1.1) +
+  geom_text(data = labels_2025, aes(label = label), hjust = -0.2, size = 3.5, fontface = "bold", show.legend = FALSE) +
+  facet_wrap(~Income_Group, ncol = 3) +
+  scale_color_manual(values = col_measure, name = NULL) +
+  scale_linetype_manual(values = c("Real Income" = "solid", "HDB Resale Price" = "solid"), name = NULL) +
+  scale_x_continuous(breaks = seq(2000, 2025, by = 5), expand = expansion(mult = c(0.02, 0.14))) +
+  scale_y_continuous(breaks = seq(60, 180, by = 20), limits = c(55, 185),
+                     sec.axis = sec_axis(~ ., breaks = 100, labels = "base year (2010 = 100)")) +
+  labs(title = "Real Household Income vs HDB Resale Price Index (2010 = 100)",
+       subtitle = "Singapore, 2000-2025  |  Income deflated by group-specific CPI  |  Shaded band = affordability gap",
+       x = NULL, y = "Index value (2010 = 100)",
+       caption = "Sources: SingStat - Household Income by Decile; CPI by Income Group. HDB / data.gov.sg - Resale Prices.") +
+  base_theme + theme(legend.text = element_text(size = 13), legend.spacing.x = unit(0.4, "cm"),
+                     axis.text.y.right = element_text(size = 9, color = "grey50", face = "italic", hjust = 0),
+                     axis.ticks.y.right = element_line(color = "grey55"))
+```
+
+::: {.notes}
+**Speaker: Nurul Zahirah.** This is our main improved visualisation. Each panel shows one income group, with real income in blue and HDB resale prices in red, both indexed to 2010 equals 100 on a single y-axis. The shaded band makes the affordability gap immediately visible, and the bold numbers at the right edge give exact 2025 values. You can see that the gap widens sharply after 2020 across all groups. Let me walk you through how to read this chart.
+:::
+
+
+## 4.2 How to Read the Chart {style="font-size: 0.78em;"}
+
+<hr>
+
+:::: columns
+::: {.column width="55%"}
+
+- Each panel = one **income group** (Bottom 20%, Middle 60%, Top 20%)
+- [Blue line]{style="color: #2166AC; font-weight: bold;"} = **real income** (inflation-adjusted)
+- [Red line]{style="color: #B2182B; font-weight: bold;"} = **HDB resale price** index
+- Both indexed to **2010 = 100** — same scale, genuine comparison
+- [Shaded band]{style="color: #B2182B;"} = **affordability gap** (red above blue = housing outpaces income)
+- Grey bands = **GFC** (2008–09) and **COVID-19** (2020–21)
+- **Bold numbers** at right = exact 2025 index values
+
+:::
+::: {.column width="45%"}
+
+```{r}
+#| echo: false
+
+tribble(
+  ~No, ~Improvement,
+  "1", "Single y-axis (no dual-axis distortion)",
+  "2", "Three groups (not ten overlapping lines)",
+  "3", "Group-specific CPI deflation",
+  "4", "Shaded gap as a **visible object**",
+  "5", "Direct endpoint labels (2025 values)",
+  "6", "GFC & COVID-19 event annotations",
+  "7", "Consistent faceted layout for comparison"
+) |>
+  gt() |> fmt_markdown(columns = Improvement) |>
+  cols_label(No = "#", Improvement = "Improvement Applied") |>
+  tab_options(table.font.size = 18, column_labels.background.color = "lightblue",
+              column_labels.font.weight = "bold", table.width = pct(100), data_row.padding = px(4)) |>
+  cols_width(No ~ px(40), Improvement ~ px(500)) |>
+  cols_align(align = "center", columns = No) |>
+  tab_style(style = cell_fill(color = "gray95"), locations = cells_body(rows = c(2, 4, 6)))
+```
+
+:::
+::::
+
+::: {.notes}
+**Speaker: Nurul Zahirah.** This slide is a reading guide. The key innovation is putting both measures on a single indexed scale, so the visual comparison is honest. The seven improvements listed on the right correspond directly to the seven weaknesses Shina identified earlier. I'll now hand over to Anushka to discuss what the data reveals.
+:::
+
+
+<!-- ======================================================================= -->
+<!-- SECTION 5: INSIGHTS & ANALYSIS                                          -->
+<!-- ======================================================================= -->
+
+# 5.0 Insights & Analysis
+
+
+## 5.1 Key Insights {style="font-size: 0.78em;"}
+
+<hr>
+
+```{r}
+#| echo: false
+
+tribble(
+  ~Period, ~Observation, ~Key_Figure,
+  "**Before 2010**", "Real income broadly kept pace with HDB prices across all groups", "Affordability gap **negative** (income ahead)",
+  "**Before 2010**", "GFC (2008–09) temporarily compressed the gap as housing dipped", "Housing prices dipped during crisis",
+  "**2010 Onward**", "Resale prices diverge upward from income across all groups", "Gap widens **progressively**",
+  "**2010 Onward**", "Acceleration after 2020: pent-up demand + construction delays + low rates", "Post-COVID surge drives gap",
+  "**By 2025**", "Bottom 20%: income index 140.5 vs HDB 171.6", "Gap = **+31.1 pts** (most policy-relevant)",
+  "**By 2025**", "Middle 60%: income index 141.8 vs HDB 171.6", "Gap = **+29.8 pts**",
+  "**By 2025**", "Top 20%: income index 113.8 vs HDB 171.6", "Gap = **+57.8 pts** (see note below)"
+) |>
+  gt() |> fmt_markdown(columns = c(Period, Key_Figure)) |>
+  cols_label(Period = "Period", Observation = "What We Observe", Key_Figure = "Key Figure") |>
+  tab_options(table.font.size = 18, column_labels.background.color = "lightblue",
+              column_labels.font.weight = "bold", table.width = pct(100), data_row.padding = px(5)) |>
+  cols_width(Period ~ px(170), Observation ~ px(550), Key_Figure ~ px(380)) |>
+  tab_style(style = cell_fill(color = "gray95"), locations = cells_body(rows = c(2, 4, 6))) |>
+  tab_style(style = cell_fill(color = "#FFF3F3"), locations = cells_body(rows = 5))
+```
+
+::: {style="font-size: 0.75em; margin-top: 8px;"}
+**Bottom 20% gap is most policy-relevant** — lower absolute income, least financial buffer, weakest 2020–2025 growth.
+
+**Why the Top 20% gap appears largest:** The Top 20% have a higher CPI basket (more services, discretionary spending), so CPI deflation reduces their *real* income index more aggressively. This inflates the *index-based* gap but does not mean they face greater hardship — they still have the highest absolute income and strongest financial buffers.
+:::
+
+::: {.notes}
+**Speaker: Anushka.** Let me highlight the key findings. Before 2010, income generally kept pace with housing. After 2010, prices diverged, and the gap accelerated sharply post-COVID. By 2025, the Bottom 20% face a 31-point gap — and that is the most policy-relevant figure because these households have the least financial buffer. You'll notice the Top 20% gap looks even larger at 58 points, but this is largely an artefact of CPI deflation: their higher CPI basket reduces the real income index more. In absolute dollar terms, they still earn the most.
+:::
+
+
+## 5.2 Affordability Gap Over Time
+
+<hr>
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 5.5
+
+gap_labels_2025 <- gap_data |> filter(Year == 2025) |>
+  mutate(label = paste0(Income_Group, ": +", round(Affordability_Gap, 1), " pts"),
+         y_pos = case_when(Income_Group == "Top 20%" ~ 59, Income_Group == "Bottom 20%" ~ 32,
+                           Income_Group == "Middle 60%" ~ 26))
+
+ggplot(gap_data, aes(x = Year, y = Affordability_Gap, color = Income_Group)) +
+  geom_rect(data = events, aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
+            inherit.aes = FALSE, fill = "grey50", alpha = 0.10) +
+  geom_text(data = events, aes(x = (xmin + xmax) / 2, y = -39, label = label),
+            inherit.aes = FALSE, size = 3, color = "grey35", fontface = "italic", angle = 90) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50", linewidth = 0.5) +
+  geom_line(linewidth = 1.2) + geom_point(size = 2) +
+  geom_text(data = gap_labels_2025, aes(y = y_pos, label = label),
+            x = 2026, hjust = 0, size = 3.2, fontface = "bold", show.legend = FALSE) +
+  scale_color_manual(values = col_group, name = NULL) +
+  scale_x_continuous(breaks = seq(2000, 2025, by = 5), limits = c(1999, 2033), expand = expansion(mult = c(0, 0))) +
+  scale_y_continuous(breaks = seq(-40, 80, by = 20), limits = c(-42, 85)) +
+  labs(title = "Affordability Gap by Income Group",
+       subtitle = "Gap = HDB index - Real income index  |  Positive = housing outpacing income",
+       x = NULL, y = "Gap (index points)", caption = "Sources: SingStat, HDB / data.gov.sg") +
+  base_theme
+```
+
+::: {.notes}
+**Speaker: Anushka.** This chart isolates the affordability gap itself — the difference between HDB price index and real income index. When the line is above zero, housing is outpacing income. You can see all three groups cross zero around 2012–2013, and then the gap accelerates dramatically after COVID-19. The endpoint labels confirm the exact 2025 gap for each group.
+:::
+
+
+## 5.3 Growth Rate Comparison (CAGR)
+
+<hr>
+
+```{r}
+#| echo: false
+#| fig-width: 13
+#| fig-height: 5.2
+
+cagr_fn <- function(end_val, start_val, n) round(((end_val / start_val)^(1 / n) - 1) * 100, 2)
+periods <- list(c(2000, 2010), c(2010, 2020), c(2020, 2025))
+
+income_cagr <- map_dfr(periods, function(p) {
+  wide <- tidy_data |> filter(Measure_Type == "Real Income", Year %in% p) |>
+    pivot_wider(names_from = Year, values_from = Index_Value)
+  wide |> mutate(CAGR = cagr_fn(!!sym(as.character(p[2])), !!sym(as.character(p[1])), p[2] - p[1]),
+                 Sub_Period = paste0(p[1], " to ", p[2]), Measure = "Real Income") |>
+    select(Income_Group, Sub_Period, Measure, CAGR)
+})
+hdb_cagr <- map_dfr(periods, function(p) {
+  wide <- tidy_data |> filter(Measure_Type == "HDB Resale Price", Year %in% p) |>
+    distinct(Year, Index_Value) |> pivot_wider(names_from = Year, values_from = Index_Value)
+  tibble(CAGR = cagr_fn(wide[[as.character(p[2])]], wide[[as.character(p[1])]], p[2] - p[1]),
+         Sub_Period = paste0(p[1], " to ", p[2]), Measure = "HDB Resale Price")
+}) |> crossing(Income_Group = c("Bottom 20%", "Middle 60%", "Top 20%"))
+
+cagr_data <- bind_rows(income_cagr, hdb_cagr) |>
+  mutate(Income_Group = factor(Income_Group, levels = c("Bottom 20%", "Middle 60%", "Top 20%")),
+         Sub_Period = factor(Sub_Period, levels = c("2000 to 2010", "2010 to 2020", "2020 to 2025")),
+         Measure = factor(Measure, levels = c("Real Income", "HDB Resale Price")))
+
+ggplot(cagr_data, aes(x = Sub_Period, y = CAGR, fill = Measure)) +
+  geom_col(position = position_dodge(0.65), width = 0.55) +
+  geom_hline(yintercept = 0, linewidth = 0.4, color = "grey40") +
+  geom_text(aes(label = paste0(round(CAGR, 1), "%"), vjust = ifelse(CAGR >= 0, -0.4, 1.3)),
+            position = position_dodge(0.65), size = 3.2, fontface = "bold") +
+  facet_wrap(~Income_Group, ncol = 3) +
+  scale_fill_manual(values = col_measure, name = NULL) +
+  scale_y_continuous(labels = function(x) paste0(x, "%"), breaks = seq(-2, 10, by = 2)) +
+  labs(title = "CAGR of Real Income vs HDB Resale Prices by Sub-Period",
+       subtitle = "Three periods: 2000-2010, 2010-2020, 2020-2025",
+       x = NULL, y = "CAGR (%)", caption = "Sources: SingStat, HDB / data.gov.sg") +
+  base_theme + theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
+```
+
+::: {.notes}
+**Speaker: Anushka.** To quantify the divergence, we computed compound annual growth rates for three sub-periods. The most striking finding is in 2020 to 2025: HDB prices grew at 8.1% per annum while real income growth was much weaker across all groups — and actually negative for the Top 20% after CPI deflation. This confirms that the post-COVID period is the main driver of the affordability gap.
+:::
+
+
+## 5.4 Analysis Commentary {style="font-size: 0.78em;"}
+
+<hr>
+
+```{r}
+#| echo: false
+
+tribble(
+  ~Period, ~HDB_CAGR, ~Income_Highlight, ~Interpretation,
+  "**2000–2010**", "4.3% p.a.", "Bottom 20% CAGR = **-0.1%**", "HDB already outpacing income; early warning signs of affordability stress",
+  "**2010–2020**", "1.5% p.a.", "Income recovered modestly across all groups", "Cooling measures worked; gap stabilized but **did not close**",
+  "**2020–2025**", "**8.1% p.a.**", "Top 20% CAGR = **-0.5%**; Bottom 20% = weakest growth", "Steepest HDB surge; COVID-19 marks the **inflection point** — all gaps widen dramatically"
+) |>
+  gt() |> fmt_markdown(columns = c(Period, HDB_CAGR, Income_Highlight, Interpretation)) |>
+  cols_label(Period = "Period", HDB_CAGR = "HDB Price CAGR", Income_Highlight = "Income Highlight", Interpretation = "Interpretation") |>
+  tab_options(table.font.size = 19, column_labels.background.color = "lightblue",
+              column_labels.font.weight = "bold", table.width = pct(100), data_row.padding = px(8)) |>
+  cols_width(Period ~ px(160), HDB_CAGR ~ px(150), Income_Highlight ~ px(350), Interpretation ~ px(500)) |>
+  tab_style(style = cell_fill(color = "gray95"), locations = cells_body(rows = 2)) |>
+  tab_style(style = cell_fill(color = "#FFF3F3"), locations = cells_body(rows = 3))
+```
+
+::: {style="font-size: 0.75em; margin-top: 8px;"}
+The **2020–2025 window alone** accounts for most of the affordability gap visible in the main chart. Drivers: construction delays, historically low interest rates, and pent-up demand from the pandemic period.
+:::
+
+::: {.notes}
+**Speaker: Anushka.** This table synthesises our CAGR analysis into a narrative. The 2000 to 2010 period already showed warning signs, the 2010 to 2020 period saw cooling measures stabilize the gap, and the 2020 to 2025 period was the inflection point where all gaps widened dramatically. I'll now hand back to Shina for the conclusion.
+:::
+
+
+<!-- ======================================================================= -->
+<!-- SECTION 6: CONCLUSION                                                   -->
+<!-- ======================================================================= -->
+
+# 6.0 Conclusion
+
+
+## 6.1 Summary & Takeaways {style="font-size: 0.75em;"}
+
+<hr>
+
+**Did income keep pace with housing prices?**
+
+```{r}
+#| echo: false
+
+tribble(
+  ~Period, ~Answer, ~Detail,
+  "**Before 2010**", "Broadly **yes**", "Real income kept pace across all income groups",
+  "**After 2010**", "**No**", "Gap widened progressively, accelerated sharply since 2020",
+  "**Bottom 20%**", "Most acute **pressure**", "Weakest income growth, least financial buffer, largest expenditure share on housing"
+) |>
+  gt() |> fmt_markdown(columns = c(Period, Answer)) |>
+  cols_label(Period = "Period", Answer = "Answer", Detail = "Detail") |>
+  tab_options(table.font.size = 19, column_labels.background.color = "lightblue",
+              column_labels.font.weight = "bold", table.width = pct(100), data_row.padding = px(7)) |>
+  cols_width(Period ~ px(170), Answer ~ px(200), Detail ~ px(700)) |>
+  tab_style(style = cell_fill(color = "#FFF3F3"), locations = cells_body(rows = 3))
+```
+
+<br>
+
+**What we improved**
+
+```{r}
+#| echo: false
+
+tribble(
+  ~Original_Problem, ~Our_Solution,
+  "Dual-axis distortion", "**Common indexed scale** (2010 = 100) — single y-axis",
+  "10 congested decile lines", "**3 meaningful groups** — Bottom 20%, Middle 60%, Top 20%",
+  "Nominal (unadjusted) income", "**Group-specific CPI** deflation for honest comparison",
+  "No visible affordability metric", "**Shaded ribbon** + endpoint labels + event annotations"
+) |>
+  gt() |> fmt_markdown(columns = Our_Solution) |>
+  cols_label(Original_Problem = "Original Problem", Our_Solution = "Our Solution") |>
+  tab_options(table.font.size = 18, column_labels.background.color = "lightblue",
+              column_labels.font.weight = "bold", table.width = pct(100), data_row.padding = px(6)) |>
+  cols_width(Original_Problem ~ px(350), Our_Solution ~ px(700)) |>
+  tab_style(style = cell_fill(color = "gray95"), locations = cells_body(rows = c(2, 4)))
+```
+
+::: {.notes}
+**Speaker: Shina.** To summarise: before 2010, income broadly kept pace with housing prices. After 2010, and especially after COVID-19, the gap widened dramatically. The Bottom 20% face the most acute pressure. Our four key improvements — single indexed scale, three meaningful groups, group-specific CPI deflation, and the shaded ribbon — transform the original into an honest, readable, and insightful visualisation.
+:::
+
+
+## 6.2 Limitations & Future Work {style="font-size: 0.82em;"}
+
+<hr>
+
+:::: columns
+::: {.column width="50%"}
+
+### Limitations
+
+- **Median annual resale price** — no flat type/location variation
+- **Employment income only** — excludes transfers, CPF top-ups
+- **CPI deflation** — no mortgage rate / debt servicing costs
+- **Index rebasing** — obscures absolute level differences
+
+:::
+::: {.column width="50%"}
+
+### Possible Extensions
+
+- Break down by **flat type** (3-room, 4-room, 5-room)
+- Incorporate **government grants** (CPF Housing Grant, AHCG)
+- Add **geographic dimension** (town-level prices)
+- Include **mortgage servicing ratios**
+
+:::
+::::
+
+::: {.notes}
+**Speaker: All (Shina wraps up).** We want to be transparent about limitations. We used median annual resale prices without flat-type or location breakdowns, and employment income excludes government transfers. Future work could incorporate flat-type disaggregation, housing grants, town-level prices, and mortgage servicing ratios for a more complete picture.
+:::
+
+
+<!-- ======================================================================= -->
+<!-- END OF SLIDES                                                           -->
+<!-- ======================================================================= -->
+
+
+## Thank You {.unnumbered .unlisted style="text-align: center;"}
+
+<br><br>
+
+### Real Income vs Housing Prices in Singapore {style="color: #2166AC;"}
+
+::: {style="font-size: 0.85em; margin-top: 8px;"}
+Did income growth keep pace with HDB resale prices, 2000–2025?
+:::
+
+<br>
+
+Shina · Jeanie · Claudia · Nurul Zahirah · Anushka
+
+<br>
+
+AAI1001 – Data Engineering and Visualization | AY25/26 Tri 2
+
+<br>
+
+::: {style="font-size: 0.8em; color: grey;"}
+Questions?
+:::
+
+::: {.notes}
+**Speaker: Shina.** Thank you for watching our presentation. We welcome any questions.
+:::

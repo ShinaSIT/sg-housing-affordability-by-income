@@ -1,0 +1,64 @@
+/*-- scss:defaults --*/
+
+/* ── Fonts ───────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+
+$font-family-sans-serif: 'Source Sans Pro', sans-serif;
+$presentation-font-size-root: 36px;
+$presentation-h1-font-size: 1.6em;
+$presentation-h2-font-size: 1.25em;
+$presentation-h3-font-size: 1.0em;
+
+/* ── Colours ─────────────────────────────────────────────────────────────── */
+$body-bg: #FAFAFA;
+$body-color: #333333;
+$link-color: #2166AC;
+$selection-bg: #2166AC;
+$selection-color: #FFFFFF;
+
+/* ── Headings ────────────────────────────────────────────────────────────── */
+$presentation-heading-color: #1a1a2e;
+
+/*-- scss:rules --*/
+
+/* ── Section title slides ────────────────────────────────────────────────── */
+.reveal section.level1 h1 {
+  font-size: 2.0em;
+  font-weight: 700;
+  color: #2166AC;
+  border-bottom: 3px solid #B2182B;
+  padding-bottom: 12px;
+}
+
+/* ── Horizontal rule after slide titles ──────────────────────────────────── */
+.reveal hr {
+  border: none;
+  border-top: 2px solid #ddd;
+  margin: 8px 0 16px 0;
+}
+
+/* ── Callout styling ─────────────────────────────────────────────────────── */
+.reveal .callout-note {
+  border-left-color: #2166AC;
+}
+
+/* ── Table styling ───────────────────────────────────────────────────────── */
+.reveal table {
+  font-size: 0.75em;
+}
+
+.reveal table thead th {
+  background-color: #e8e8e8;
+  font-weight: 600;
+}
+
+/* ── Footer and slide number ─────────────────────────────────────────────── */
+.reveal .slide-number {
+  font-size: 0.55em;
+  color: #888;
+}
+
+.reveal .footer {
+  font-size: 0.45em;
+  color: #999;
+}
