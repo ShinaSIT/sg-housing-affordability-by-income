@@ -1,8 +1,6 @@
 /*-- scss:defaults --*/
-
 /* ── Fonts ───────────────────────────────────────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
-
 $font-family-sans-serif: 'Source Sans Pro', sans-serif;
 $presentation-font-size-root: 36px;
 $presentation-h1-font-size: 1.6em;
@@ -21,6 +19,26 @@ $presentation-heading-color: #1a1a2e;
 
 /*-- scss:rules --*/
 
+/* ── Performance Optimization for Speaker Notes ──────────────────────────── */
+/* Fix lagging speaker notes by optimizing rendering */
+.reveal .speaker-notes {
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-font-smoothing: antialiased;
+  backface-visibility: hidden;
+}
+
+/* Improve overall presentation performance */
+.reveal .slides {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.reveal .slides section {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
 /* ── Section title slides ────────────────────────────────────────────────── */
 .reveal section.level1 h1 {
   font-size: 2.0em;
@@ -28,6 +46,19 @@ $presentation-heading-color: #1a1a2e;
   color: #2166AC;
   border-bottom: 3px solid #B2182B;
   padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+
+/* ── Subsection styling ──────────────────────────────────────────────────── */
+.reveal h2 {
+  margin-top: 20px;
+  margin-bottom: 16px;
+}
+
+.reveal h3 {
+  margin-top: 16px;
+  margin-bottom: 12px;
+  color: #555;
 }
 
 /* ── Horizontal rule after slide titles ──────────────────────────────────── */
@@ -45,20 +76,157 @@ $presentation-heading-color: #1a1a2e;
 /* ── Table styling ───────────────────────────────────────────────────────── */
 .reveal table {
   font-size: 0.75em;
+  margin: 12px auto;
 }
 
 .reveal table thead th {
   background-color: #e8e8e8;
   font-weight: 600;
+  padding: 8px 12px;
+}
+
+.reveal table tbody td {
+  padding: 6px 12px;
+}
+
+/* Ensure tables are readable */
+.reveal table {
+  border-collapse: collapse;
+}
+
+.reveal table td,
+.reveal table th {
+  border: 1px solid #ddd;
+}
+
+/* ── Code block optimization ─────────────────────────────────────────────── */
+.reveal pre {
+  font-size: 0.55em;
+  line-height: 1.4;
+  margin: 12px 0;
+}
+
+.reveal code {
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+}
+
+/* ── List styling ────────────────────────────────────────────────────────── */
+.reveal ul,
+.reveal ol {
+  margin: 12px 0;
+}
+
+.reveal ul li,
+.reveal ol li {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+/* ── Image optimization ──────────────────────────────────────────────────── */
+.reveal img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
 
 /* ── Footer and slide number ─────────────────────────────────────────────── */
 .reveal .slide-number {
   font-size: 0.55em;
   color: #888;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 4px 8px;
+  border-radius: 3px;
 }
 
 .reveal .footer {
   font-size: 0.45em;
   color: #999;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 8px 16px;
+}
+
+/* ── Smooth transitions ──────────────────────────────────────────────────── */
+.reveal .slides section {
+  transition: transform 0.3s ease;
+}
+
+/* ── Speaker notes styling (improved readability) ────────────────────────── */
+.reveal .speaker-notes {
+  font-size: 16px;
+  line-height: 1.6;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-left: 4px solid #2166AC;
+}
+
+/* Bold speaker names in notes */
+.reveal .speaker-notes strong {
+  color: #2166AC;
+  font-weight: 700;
+}
+
+/* ── Responsive adjustments ──────────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .reveal table {
+    font-size: 0.65em;
+  }
+  
+  .reveal {
+    font-size: 32px;
+  }
+}
+
+/* ── Print optimization ──────────────────────────────────────────────────── */
+@media print {
+  .reveal .slides section {
+    page-break-inside: avoid;
+  }
+  
+  .reveal table {
+    font-size: 0.7em;
+  }
+}
+
+/* ── Column layout improvements ──────────────────────────────────────────── */
+.reveal .columns {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.reveal .column {
+  flex: 1;
+}
+
+/* ── Emphasis and highlighting ───────────────────────────────────────────── */
+.reveal em {
+  color: #B2182B;
+  font-style: italic;
+}
+
+.reveal strong {
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+/* ── Caption styling ─────────────────────────────────────────────────────── */
+.reveal figcaption,
+.reveal .caption {
+  font-size: 0.65em;
+  color: #666;
+  font-style: italic;
+  margin-top: 8px;
+}
+
+/* ── Background colors for special slides ────────────────────────────────── */
+.reveal section[data-background-color] {
+  padding: 40px;
+}
+
+/* ── Smooth font rendering ───────────────────────────────────────────────── */
+.reveal {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
