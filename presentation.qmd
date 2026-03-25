@@ -277,7 +277,7 @@ tribble(
 ::::
 
 ::: {.notes}
-**Speaker: Jeanie.** Every data choice has trade-offs, so here we explain why we chose group-specific CPI over national CPI, HDB resale over BTO or private, median over mean, and 2010 as the base year. The most important decision is the group-specific CPI — lower-income households spend a larger share on housing and food, so applying a single national CPI would understate the real cost burden on the Bottom 20%. I'll now hand over to Claudia for the data engineering workflow.
+**Speaker: Jeanie.** Every data choice has trade-offs, so here we explain why we chose group-specific CPI over national CPI, HDB resale over BTO or private, median over mean, and 2010 as the base year. The most important decision is the group-specific CPI — lower-income households spend a larger share on housing and food, so applying a single national CPI would understate the real cost burden on the Bottom 20%.
 :::
 
 
@@ -566,7 +566,7 @@ scale_y_continuous(
 ```
 
 ::: {.notes}
-**Speaker: Nurul Zahirah.** This is our main improved visualisation. Each panel represents one income group, and within each panel we compare real income and HDB resale prices on the same indexed scale, with 2010 set to 100. Because both series now share one common axis, the comparison is visually honest. The shaded band highlights the affordability gap, and the endpoint labels show the exact 2025 values. The overall pattern is clear: after 2020, housing prices rise faster than real income for all three groups.
+**Speaker: Nurul Zahirah.** This is our main improved visualisation. Each panel represents one income group, and within each panel we compare real income and HDB resale prices on the same indexed scale, with 2010 set to 100. Because both series now share one common axis, the comparison is visually honest. The shaded band highlights the affordability gap, and the endpoint labels show the exact 2025 values. The overall pattern is clear: the gap starts around 2012-13, then accelerates sharply post-2020, with housing prices rising faster than real income for all three groups.
 :::
 
 
@@ -770,7 +770,7 @@ tribble(
   ~Period, ~Answer, ~Detail,
   "**Before 2010**", "Broadly **yes**", "Real income kept pace across all income groups",
   "**After 2010**", "**No**", "Gap widened progressively, accelerated sharply since 2020",
-  "**Bottom 20%**", "Most acute **pressure**", "Weakest income growth, least financial buffer, largest expenditure share on housing"
+  "**Bottom 20%**", "Most acute **pressure**", "Bottom 20% face a 31-point gap — 140.5 vs 171.6 for Impact. Weakest income growth, least financial buffer, largest expenditure share on housing"
 ) |>
   gt() |> fmt_markdown(columns = c(Period, Answer)) |>
   cols_label(Period = "Period", Answer = "Answer", Detail = "Detail") |>
