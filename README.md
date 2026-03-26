@@ -12,7 +12,7 @@
 
 ---
 
-## 📊 Project Overview
+## Project Overview
 
 ### Research Question
 **Did real income growth for lower-income households keep pace with housing price growth between 2000 and 2025, and have affordability gaps widened across income groups over time?**
@@ -24,7 +24,7 @@
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 project/
@@ -43,7 +43,7 @@ project/
 
 ---
 
-## 🔧 How to Reproduce
+## How to Reproduce
 
 ### Prerequisites
 - R (≥ 4.0.0)
@@ -80,7 +80,7 @@ quarto::quarto_render("project-proposal.qmd")
 
 ---
 
-## 📊 Data Sources
+## Data Sources
 
 ### 1. Average Monthly Household Employment Income by Decile
 - **Source**: Department of Statistics Singapore (SingStat)
@@ -106,7 +106,7 @@ quarto::quarto_render("project-proposal.qmd")
 
 ---
 
-## 🔄 Data Engineering Pipeline
+## Data Engineering Pipeline
 
 ### Stage 1: Ingest
 - Load 3 raw sources using `read_excel()` and `read_csv()`
@@ -145,7 +145,7 @@ quarto::quarto_render("project-proposal.qmd")
 
 ---
 
-## 📈 Key Improvements Over Original Visualization
+## Key Improvements Over Original Visualization
 
 | Original Problem | Our Solution |
 |-----------------|--------------|
@@ -159,7 +159,7 @@ quarto::quarto_render("project-proposal.qmd")
 
 ---
 
-## 📊 Analysis Methods
+## Analysis Methods
 
 ### 1. Index-Based Comparison (Main Visualization)
 - Common base year (2010 = 100) enables honest visual comparison
@@ -181,7 +181,7 @@ quarto::quarto_render("project-proposal.qmd")
 
 ---
 
-## 🎯 Key Insights
+## Key Insights
 
 ### Before 2010
 - Real income broadly kept pace with HDB prices
@@ -202,7 +202,7 @@ quarto::quarto_render("project-proposal.qmd")
 
 ---
 
-## ⚠️ Limitations
+## Limitations
 
 ### Data Scope
 - **Median annual resale price** – no flat type or location variation
@@ -217,7 +217,7 @@ quarto::quarto_render("project-proposal.qmd")
 
 ---
 
-## 🔮 Possible Extensions
+## Possible Extensions
 
 ### Geographic Dimension
 - Break down by town-level HDB prices
@@ -238,7 +238,7 @@ quarto::quarto_render("project-proposal.qmd")
 
 ---
 
-## 📝 File Descriptions
+## File Descriptions
 
 ### Core Files
 
@@ -264,7 +264,7 @@ quarto::quarto_render("project-proposal.qmd")
 
 ---
 
-## 🎬 Presentation Guidelines
+## Presentation Guidelines
 
 ### Duration
 - **Maximum**: 15 minutes
@@ -290,7 +290,7 @@ quarto::quarto_render("project-proposal.qmd")
 
 ---
 
-## 🤝 Team Contributions
+## Team Contributions
 
 | Member | Role | Key Responsibilities |
 |--------|------|---------------------|
@@ -302,7 +302,7 @@ quarto::quarto_render("project-proposal.qmd")
 
 ---
 
-## 📚 References
+## References
 
 ### Data Sources
 1. Department of Statistics Singapore. (2025). *Average Monthly Household Employment Income by Decile*. Retrieved from https://tablebuilder.singstat.gov.sg/table/CT/17880
@@ -316,7 +316,7 @@ Stacked Homes. (2020). *Has Our Household Income Really Overtaken Growth In Prop
 
 ---
 
-## 📧 Contact
+## Contact
 
 For questions about this project, please contact any team member through the course LMS forum.
 
@@ -326,10 +326,10 @@ For questions about this project, please contact any team member through the cou
 
 ---
 
-## 📄 License
+## License
 
 This project is submitted as part of AAI1001 coursework. All data sources are publicly available from Singapore government agencies. Original visualization critiqued under fair use for educational purposes.
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: 26 March 2026
