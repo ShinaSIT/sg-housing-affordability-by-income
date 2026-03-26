@@ -770,7 +770,7 @@ tribble(
   ~Period, ~Answer, ~Detail,
   "**Before 2010**", "Broadly **yes**", "Real income kept pace across all income groups",
   "**After 2010**", "**No**", "Gap widened progressively, accelerated sharply since 2020",
-  "**Bottom 20%**", "Most acute **pressure**", "Bottom 20% face a 31-point gap — 140.5 vs 171.6 for Impact. Weakest income growth, least financial buffer, largest expenditure share on housing"
+  "**Bottom 20%**", "Most acute **pressure**", "Bottom 20% face a 31-point gap — 140.5 vs 171.6 Weakest income growth, least financial buffer, largest expenditure share on housing"
 ) |>
   gt() |> fmt_markdown(columns = c(Period, Answer)) |>
   cols_label(Period = "Period", Answer = "Answer", Detail = "Detail") |>
