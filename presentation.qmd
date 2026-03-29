@@ -95,8 +95,9 @@ code.sourceCode { font-size: 1.2em; }
 ::: {.column width="55%"}
 
 ::: {style="background: #2166AC; color: white; padding: 12px 18px; border-radius: 6px; font-size: 0.85em; margin-bottom: 16px;"}
+Research Question: 
 <div class="research-question">
-Research Question: Did real income growth for lower-income households keep pace with housing price growth between 2000 and 2025, and have affordability gaps widened across income groups over time?
+Did real income growth for lower-income households keep pace with housing price growth between 2000 and 2025, and have affordability gaps widened across income groups over time?
 </div>
 :::
 
