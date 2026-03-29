@@ -81,6 +81,11 @@ code.sourceCode { font-size: 1.2em; }
 **Speaker: Shina.** Welcome everyone. Today our team will present our analysis of whether real income growth in Singapore kept pace with HDB resale price growth between 2000 and 2025. We begin with the original visualisation that inspired this project, then show how we redesigned it using clearer data choices, a transparent data pipeline, and a more honest visual comparison.
 :::
 
+<style>
+.research-question {
+    color: white !important;
+}
+</style>
 
 ## 1.1 Previous Visualisation {style="font-size: 0.80em;"}
 
@@ -90,7 +95,9 @@ code.sourceCode { font-size: 1.2em; }
 ::: {.column width="55%"}
 
 ::: {style="background: #2166AC; color: white; padding: 12px 18px; border-radius: 6px; font-size: 0.85em; margin-bottom: 16px;"}
-**Research Question:** *Did real income growth for lower-income households keep pace with housing price growth between 2000 and 2025, and have affordability gaps widened across income groups over time?*
+<div class="research-question">
+Research Question: Did real income growth for lower-income households keep pace with housing price growth between 2000 and 2025, and have affordability gaps widened across income groups over time?
+</div>
 :::
 
 - **~80% of Singapore residents** live in HDB flats
